@@ -6,8 +6,8 @@ use crate::{
     instructions::{
         blank_instruction, common, execute, execute_instruction, extract_opcode,
         generate_handle_function_list, instruction_length, is_basic_block_end_instruction,
-        is_slowpath_instruction, v_alu as alu, HandleFunction, Instruction, Itype, Register, Rtype,
-        Stype, VVtype, VXtype,
+        is_slowpath_instruction, v_alu as alu, HandleFunction, Instruction, Itype, Register,
+        VVtype, VXtype,
     },
     machine::{
         asm::{
@@ -492,23 +492,29 @@ impl<'a> VTraceAsmMachine<'a> {
             if !is_slowpath_instruction(inst) {
                 match opcode {
                     insts::OP_ADD => {
-                        v_trace.actions.push(Box::new(move |m| handle_add(m, inst)));
+                        v_trace.actions.push(Box::new(move |m| {
+                            crate::instructions::execute::handle_add(m, inst)
+                        }));
                     }
                     insts::OP_ADDI => {
-                        v_trace
-                            .actions
-                            .push(Box::new(move |m| handle_addi(m, inst)));
+                        v_trace.actions.push(Box::new(move |m| {
+                            crate::instructions::execute::handle_addi(m, inst)
+                        }));
                     }
                     insts::OP_SUB => {
-                        v_trace.actions.push(Box::new(move |m| handle_sub(m, inst)));
+                        v_trace.actions.push(Box::new(move |m| {
+                            crate::instructions::execute::handle_sub(m, inst)
+                        }));
                     }
                     insts::OP_SLLI => {
-                        v_trace
-                            .actions
-                            .push(Box::new(move |m| handle_slli(m, inst)));
+                        v_trace.actions.push(Box::new(move |m| {
+                            crate::instructions::execute::handle_slli(m, inst)
+                        }));
                     }
                     insts::OP_BLT => {
-                        v_trace.actions.push(Box::new(move |m| handle_blt(m, inst)));
+                        v_trace.actions.push(Box::new(move |m| {
+                            crate::instructions::execute::handle_blt(m, inst)
+                        }));
                     }
                     insts::OP_JALR => {
                         v_trace.actions.push(Box::new(move |m| {
@@ -1211,44 +1217,6 @@ fn handle_vmerge_256<'a>(m: &mut CM<'a>, inst: Instruction) -> Result<(), Error>
 
         m.inner.v_to_v(src, sew, j, 1, i.vd())?;
     }
-    Ok(())
-}
-
-fn handle_sub<'a>(m: &mut CM<'a>, inst: Instruction) -> Result<(), Error> {
-    let i = Rtype(inst);
-    common::sub(m, i.rd(), i.rs1(), i.rs2());
-    Ok(())
-}
-
-fn handle_add<'a>(m: &mut CM<'a>, inst: Instruction) -> Result<(), Error> {
-    let i = Rtype(inst);
-    common::add(m, i.rd(), i.rs1(), i.rs2());
-    Ok(())
-}
-
-fn handle_addi<'a>(m: &mut CM<'a>, inst: Instruction) -> Result<(), Error> {
-    let i = Itype(inst);
-    common::addi(m, i.rd(), i.rs1(), i.immediate_s());
-    Ok(())
-}
-
-fn handle_slli<'a>(m: &mut CM<'a>, inst: Instruction) -> Result<(), Error> {
-    let i = Itype(inst);
-    common::slli(m, i.rd(), i.rs1(), i.immediate_u());
-    Ok(())
-}
-
-fn handle_blt<'a>(m: &mut CM<'a>, inst: Instruction) -> Result<(), Error> {
-    let i = Stype(inst);
-    let pc = m.pc();
-    let rs1_value = &m.registers()[i.rs1()];
-    let rs2_value = &m.registers()[i.rs2()];
-    let condition = rs1_value.lt_s(&rs2_value);
-    let new_pc = condition.cond(
-        &u64::from_i32(i.immediate_s()).wrapping_add(*pc),
-        &u64::from_u8(instruction_length(inst)).wrapping_add(*pc),
-    );
-    m.update_pc(new_pc);
     Ok(())
 }
 
