@@ -469,7 +469,6 @@ impl<'a> VTraceAsmMachine<'a> {
         trace: &Trace,
         handle_function_list: &[Option<HandleFunction<VInferMachine>>],
     ) -> Option<VTrace<'a>> {
-        println!("try_build_v_trace");
         let mut v_trace = VTrace {
             address: trace.address,
             code_length: trace.length,
@@ -485,42 +484,378 @@ impl<'a> VTraceAsmMachine<'a> {
             v_trace.last_inst_length = instruction_length(inst);
 
             let opcode = extract_opcode(inst);
-            println!(
-                "{:?}",
-                ckb_vm_definitions::instructions::instruction_opcode_name(opcode)
-            );
             if !is_slowpath_instruction(inst) {
                 match opcode {
-                    insts::OP_ADD => {
+                    insts::OP_UNLOADED => v_trace.actions.push(Box::new(move |m| {
+                        crate::instructions::execute::handle_unloaded(m, inst)
+                    })),
+                    insts::OP_ADD => v_trace.actions.push(Box::new(move |m| {
+                        crate::instructions::execute::handle_add(m, inst)
+                    })),
+                    insts::OP_ADDI => v_trace.actions.push(Box::new(move |m| {
+                        crate::instructions::execute::handle_addi(m, inst)
+                    })),
+                    insts::OP_ADDIW => v_trace.actions.push(Box::new(move |m| {
+                        crate::instructions::execute::handle_addiw(m, inst)
+                    })),
+                    insts::OP_ADDW => v_trace.actions.push(Box::new(move |m| {
+                        crate::instructions::execute::handle_addw(m, inst)
+                    })),
+                    insts::OP_AND => v_trace.actions.push(Box::new(move |m| {
+                        crate::instructions::execute::handle_and(m, inst)
+                    })),
+                    insts::OP_ANDI => v_trace.actions.push(Box::new(move |m| {
+                        crate::instructions::execute::handle_andi(m, inst)
+                    })),
+                    insts::OP_DIV => v_trace.actions.push(Box::new(move |m| {
+                        crate::instructions::execute::handle_div(m, inst)
+                    })),
+                    insts::OP_DIVU => v_trace.actions.push(Box::new(move |m| {
+                        crate::instructions::execute::handle_divu(m, inst)
+                    })),
+                    insts::OP_DIVUW => v_trace.actions.push(Box::new(move |m| {
+                        crate::instructions::execute::handle_divuw(m, inst)
+                    })),
+                    insts::OP_DIVW => v_trace.actions.push(Box::new(move |m| {
+                        crate::instructions::execute::handle_divw(m, inst)
+                    })),
+                    insts::OP_FENCE => v_trace.actions.push(Box::new(move |m| {
+                        crate::instructions::execute::handle_fence(m, inst)
+                    })),
+                    insts::OP_FENCEI => v_trace.actions.push(Box::new(move |m| {
+                        crate::instructions::execute::handle_fencei(m, inst)
+                    })),
+                    insts::OP_LB => v_trace.actions.push(Box::new(move |m| {
+                        crate::instructions::execute::handle_lb(m, inst)
+                    })),
+                    insts::OP_LBU => v_trace.actions.push(Box::new(move |m| {
+                        crate::instructions::execute::handle_lbu(m, inst)
+                    })),
+                    insts::OP_LD => v_trace.actions.push(Box::new(move |m| {
+                        crate::instructions::execute::handle_ld(m, inst)
+                    })),
+                    insts::OP_LH => v_trace.actions.push(Box::new(move |m| {
+                        crate::instructions::execute::handle_lh(m, inst)
+                    })),
+                    insts::OP_LHU => v_trace.actions.push(Box::new(move |m| {
+                        crate::instructions::execute::handle_lhu(m, inst)
+                    })),
+                    insts::OP_LUI => v_trace.actions.push(Box::new(move |m| {
+                        crate::instructions::execute::handle_lui(m, inst)
+                    })),
+                    insts::OP_LW => v_trace.actions.push(Box::new(move |m| {
+                        crate::instructions::execute::handle_lw(m, inst)
+                    })),
+                    insts::OP_LWU => v_trace.actions.push(Box::new(move |m| {
+                        crate::instructions::execute::handle_lwu(m, inst)
+                    })),
+                    insts::OP_MUL => v_trace.actions.push(Box::new(move |m| {
+                        crate::instructions::execute::handle_mul(m, inst)
+                    })),
+                    insts::OP_MULH => v_trace.actions.push(Box::new(move |m| {
+                        crate::instructions::execute::handle_mulh(m, inst)
+                    })),
+                    insts::OP_MULHSU => v_trace.actions.push(Box::new(move |m| {
+                        crate::instructions::execute::handle_mulhsu(m, inst)
+                    })),
+                    insts::OP_MULHU => v_trace.actions.push(Box::new(move |m| {
+                        crate::instructions::execute::handle_mulhu(m, inst)
+                    })),
+                    insts::OP_MULW => v_trace.actions.push(Box::new(move |m| {
+                        crate::instructions::execute::handle_mulw(m, inst)
+                    })),
+                    insts::OP_OR => v_trace.actions.push(Box::new(move |m| {
+                        crate::instructions::execute::handle_or(m, inst)
+                    })),
+                    insts::OP_ORI => v_trace.actions.push(Box::new(move |m| {
+                        crate::instructions::execute::handle_ori(m, inst)
+                    })),
+                    insts::OP_REM => v_trace.actions.push(Box::new(move |m| {
+                        crate::instructions::execute::handle_rem(m, inst)
+                    })),
+                    insts::OP_REMU => v_trace.actions.push(Box::new(move |m| {
+                        crate::instructions::execute::handle_remu(m, inst)
+                    })),
+                    insts::OP_REMUW => v_trace.actions.push(Box::new(move |m| {
+                        crate::instructions::execute::handle_remuw(m, inst)
+                    })),
+                    insts::OP_REMW => v_trace.actions.push(Box::new(move |m| {
+                        crate::instructions::execute::handle_remw(m, inst)
+                    })),
+                    insts::OP_SB => v_trace.actions.push(Box::new(move |m| {
+                        crate::instructions::execute::handle_sb(m, inst)
+                    })),
+                    insts::OP_SD => v_trace.actions.push(Box::new(move |m| {
+                        crate::instructions::execute::handle_sd(m, inst)
+                    })),
+                    insts::OP_SH => v_trace.actions.push(Box::new(move |m| {
+                        crate::instructions::execute::handle_sh(m, inst)
+                    })),
+                    insts::OP_SLL => v_trace.actions.push(Box::new(move |m| {
+                        crate::instructions::execute::handle_sll(m, inst)
+                    })),
+                    insts::OP_SLLI => v_trace.actions.push(Box::new(move |m| {
+                        crate::instructions::execute::handle_slli(m, inst)
+                    })),
+                    insts::OP_SLLIW => v_trace.actions.push(Box::new(move |m| {
+                        crate::instructions::execute::handle_slliw(m, inst)
+                    })),
+                    insts::OP_SLLW => v_trace.actions.push(Box::new(move |m| {
+                        crate::instructions::execute::handle_sllw(m, inst)
+                    })),
+                    insts::OP_SLT => v_trace.actions.push(Box::new(move |m| {
+                        crate::instructions::execute::handle_slt(m, inst)
+                    })),
+                    insts::OP_SLTI => v_trace.actions.push(Box::new(move |m| {
+                        crate::instructions::execute::handle_slti(m, inst)
+                    })),
+                    insts::OP_SLTIU => v_trace.actions.push(Box::new(move |m| {
+                        crate::instructions::execute::handle_sltiu(m, inst)
+                    })),
+                    insts::OP_SLTU => v_trace.actions.push(Box::new(move |m| {
+                        crate::instructions::execute::handle_sltu(m, inst)
+                    })),
+                    insts::OP_SRA => v_trace.actions.push(Box::new(move |m| {
+                        crate::instructions::execute::handle_sra(m, inst)
+                    })),
+                    insts::OP_SRAI => v_trace.actions.push(Box::new(move |m| {
+                        crate::instructions::execute::handle_srai(m, inst)
+                    })),
+                    insts::OP_SRAIW => v_trace.actions.push(Box::new(move |m| {
+                        crate::instructions::execute::handle_sraiw(m, inst)
+                    })),
+                    insts::OP_SRAW => v_trace.actions.push(Box::new(move |m| {
+                        crate::instructions::execute::handle_sraw(m, inst)
+                    })),
+                    insts::OP_SRL => v_trace.actions.push(Box::new(move |m| {
+                        crate::instructions::execute::handle_srl(m, inst)
+                    })),
+                    insts::OP_SRLI => v_trace.actions.push(Box::new(move |m| {
+                        crate::instructions::execute::handle_srli(m, inst)
+                    })),
+                    insts::OP_SRLIW => v_trace.actions.push(Box::new(move |m| {
+                        crate::instructions::execute::handle_srliw(m, inst)
+                    })),
+                    insts::OP_SRLW => v_trace.actions.push(Box::new(move |m| {
+                        crate::instructions::execute::handle_srlw(m, inst)
+                    })),
+                    insts::OP_SUB => v_trace.actions.push(Box::new(move |m| {
+                        crate::instructions::execute::handle_sub(m, inst)
+                    })),
+                    insts::OP_SUBW => v_trace.actions.push(Box::new(move |m| {
+                        crate::instructions::execute::handle_subw(m, inst)
+                    })),
+                    insts::OP_SW => v_trace.actions.push(Box::new(move |m| {
+                        crate::instructions::execute::handle_sw(m, inst)
+                    })),
+                    insts::OP_XOR => v_trace.actions.push(Box::new(move |m| {
+                        crate::instructions::execute::handle_xor(m, inst)
+                    })),
+                    insts::OP_XORI => v_trace.actions.push(Box::new(move |m| {
+                        crate::instructions::execute::handle_xori(m, inst)
+                    })),
+                    insts::OP_ADDUW => v_trace.actions.push(Box::new(move |m| {
+                        crate::instructions::execute::handle_adduw(m, inst)
+                    })),
+                    insts::OP_ANDN => v_trace.actions.push(Box::new(move |m| {
+                        crate::instructions::execute::handle_andn(m, inst)
+                    })),
+                    insts::OP_BCLR => v_trace.actions.push(Box::new(move |m| {
+                        crate::instructions::execute::handle_bclr(m, inst)
+                    })),
+                    insts::OP_BCLRI => v_trace.actions.push(Box::new(move |m| {
+                        crate::instructions::execute::handle_bclri(m, inst)
+                    })),
+                    insts::OP_BEXT => v_trace.actions.push(Box::new(move |m| {
+                        crate::instructions::execute::handle_bext(m, inst)
+                    })),
+                    insts::OP_BEXTI => v_trace.actions.push(Box::new(move |m| {
+                        crate::instructions::execute::handle_bexti(m, inst)
+                    })),
+                    insts::OP_BINV => v_trace.actions.push(Box::new(move |m| {
+                        crate::instructions::execute::handle_binv(m, inst)
+                    })),
+                    insts::OP_BINVI => v_trace.actions.push(Box::new(move |m| {
+                        crate::instructions::execute::handle_binvi(m, inst)
+                    })),
+                    insts::OP_BSET => v_trace.actions.push(Box::new(move |m| {
+                        crate::instructions::execute::handle_bset(m, inst)
+                    })),
+                    insts::OP_BSETI => v_trace.actions.push(Box::new(move |m| {
+                        crate::instructions::execute::handle_bseti(m, inst)
+                    })),
+                    insts::OP_CLMUL => v_trace.actions.push(Box::new(move |m| {
+                        crate::instructions::execute::handle_clmul(m, inst)
+                    })),
+                    insts::OP_CLMULH => v_trace.actions.push(Box::new(move |m| {
+                        crate::instructions::execute::handle_clmulh(m, inst)
+                    })),
+                    insts::OP_CLMULR => v_trace.actions.push(Box::new(move |m| {
+                        crate::instructions::execute::handle_clmulr(m, inst)
+                    })),
+                    insts::OP_CLZ => v_trace.actions.push(Box::new(move |m| {
+                        crate::instructions::execute::handle_clz(m, inst)
+                    })),
+                    insts::OP_CLZW => v_trace.actions.push(Box::new(move |m| {
+                        crate::instructions::execute::handle_clzw(m, inst)
+                    })),
+                    insts::OP_CPOP => v_trace.actions.push(Box::new(move |m| {
+                        crate::instructions::execute::handle_cpop(m, inst)
+                    })),
+                    insts::OP_CPOPW => v_trace.actions.push(Box::new(move |m| {
+                        crate::instructions::execute::handle_cpopw(m, inst)
+                    })),
+                    insts::OP_CTZ => v_trace.actions.push(Box::new(move |m| {
+                        crate::instructions::execute::handle_ctz(m, inst)
+                    })),
+                    insts::OP_CTZW => v_trace.actions.push(Box::new(move |m| {
+                        crate::instructions::execute::handle_ctzw(m, inst)
+                    })),
+                    insts::OP_MAX => v_trace.actions.push(Box::new(move |m| {
+                        crate::instructions::execute::handle_max(m, inst)
+                    })),
+                    insts::OP_MAXU => v_trace.actions.push(Box::new(move |m| {
+                        crate::instructions::execute::handle_maxu(m, inst)
+                    })),
+                    insts::OP_MIN => v_trace.actions.push(Box::new(move |m| {
+                        crate::instructions::execute::handle_min(m, inst)
+                    })),
+                    insts::OP_MINU => v_trace.actions.push(Box::new(move |m| {
+                        crate::instructions::execute::handle_minu(m, inst)
+                    })),
+                    insts::OP_ORCB => v_trace.actions.push(Box::new(move |m| {
+                        crate::instructions::execute::handle_orcb(m, inst)
+                    })),
+                    insts::OP_ORN => v_trace.actions.push(Box::new(move |m| {
+                        crate::instructions::execute::handle_orn(m, inst)
+                    })),
+                    insts::OP_REV8 => v_trace.actions.push(Box::new(move |m| {
+                        crate::instructions::execute::handle_rev8(m, inst)
+                    })),
+                    insts::OP_ROL => v_trace.actions.push(Box::new(move |m| {
+                        crate::instructions::execute::handle_rol(m, inst)
+                    })),
+                    insts::OP_ROLW => v_trace.actions.push(Box::new(move |m| {
+                        crate::instructions::execute::handle_rolw(m, inst)
+                    })),
+                    insts::OP_ROR => v_trace.actions.push(Box::new(move |m| {
+                        crate::instructions::execute::handle_ror(m, inst)
+                    })),
+                    insts::OP_RORI => v_trace.actions.push(Box::new(move |m| {
+                        crate::instructions::execute::handle_rori(m, inst)
+                    })),
+                    insts::OP_RORIW => v_trace.actions.push(Box::new(move |m| {
+                        crate::instructions::execute::handle_roriw(m, inst)
+                    })),
+                    insts::OP_RORW => v_trace.actions.push(Box::new(move |m| {
+                        crate::instructions::execute::handle_rorw(m, inst)
+                    })),
+                    insts::OP_SEXTB => v_trace.actions.push(Box::new(move |m| {
+                        crate::instructions::execute::handle_sextb(m, inst)
+                    })),
+                    insts::OP_SEXTH => v_trace.actions.push(Box::new(move |m| {
+                        crate::instructions::execute::handle_sexth(m, inst)
+                    })),
+                    insts::OP_SH1ADD => v_trace.actions.push(Box::new(move |m| {
+                        crate::instructions::execute::handle_sh1add(m, inst)
+                    })),
+                    insts::OP_SH1ADDUW => v_trace.actions.push(Box::new(move |m| {
+                        crate::instructions::execute::handle_sh1adduw(m, inst)
+                    })),
+                    insts::OP_SH2ADD => v_trace.actions.push(Box::new(move |m| {
+                        crate::instructions::execute::handle_sh2add(m, inst)
+                    })),
+                    insts::OP_SH2ADDUW => v_trace.actions.push(Box::new(move |m| {
+                        crate::instructions::execute::handle_sh2adduw(m, inst)
+                    })),
+                    insts::OP_SH3ADD => v_trace.actions.push(Box::new(move |m| {
+                        crate::instructions::execute::handle_sh3add(m, inst)
+                    })),
+                    insts::OP_SH3ADDUW => v_trace.actions.push(Box::new(move |m| {
+                        crate::instructions::execute::handle_sh3adduw(m, inst)
+                    })),
+                    insts::OP_SLLIUW => v_trace.actions.push(Box::new(move |m| {
+                        crate::instructions::execute::handle_slliuw(m, inst)
+                    })),
+                    insts::OP_XNOR => v_trace.actions.push(Box::new(move |m| {
+                        crate::instructions::execute::handle_xnor(m, inst)
+                    })),
+                    insts::OP_ZEXTH => v_trace.actions.push(Box::new(move |m| {
+                        crate::instructions::execute::handle_zexth(m, inst)
+                    })),
+                    insts::OP_WIDE_MUL => v_trace.actions.push(Box::new(move |m| {
+                        crate::instructions::execute::handle_wide_mul(m, inst)
+                    })),
+                    insts::OP_WIDE_MULU => v_trace.actions.push(Box::new(move |m| {
+                        crate::instructions::execute::handle_wide_mulu(m, inst)
+                    })),
+                    insts::OP_WIDE_MULSU => v_trace.actions.push(Box::new(move |m| {
+                        crate::instructions::execute::handle_wide_mulsu(m, inst)
+                    })),
+                    insts::OP_WIDE_DIV => v_trace.actions.push(Box::new(move |m| {
+                        crate::instructions::execute::handle_wide_div(m, inst)
+                    })),
+                    insts::OP_WIDE_DIVU => v_trace.actions.push(Box::new(move |m| {
+                        crate::instructions::execute::handle_wide_divu(m, inst)
+                    })),
+                    insts::OP_LD_SIGN_EXTENDED_32_CONSTANT => {
                         v_trace.actions.push(Box::new(move |m| {
-                            crate::instructions::execute::handle_add(m, inst)
-                        }));
+                            crate::instructions::execute::handle_ld_sign_extended_32_constant(
+                                m, inst,
+                            )
+                        }))
                     }
-                    insts::OP_ADDI => {
-                        v_trace.actions.push(Box::new(move |m| {
-                            crate::instructions::execute::handle_addi(m, inst)
-                        }));
-                    }
-                    insts::OP_SUB => {
-                        v_trace.actions.push(Box::new(move |m| {
-                            crate::instructions::execute::handle_sub(m, inst)
-                        }));
-                    }
-                    insts::OP_SLLI => {
-                        v_trace.actions.push(Box::new(move |m| {
-                            crate::instructions::execute::handle_slli(m, inst)
-                        }));
-                    }
-                    insts::OP_BLT => {
-                        v_trace.actions.push(Box::new(move |m| {
-                            crate::instructions::execute::handle_blt(m, inst)
-                        }));
-                    }
-                    insts::OP_JALR => {
-                        v_trace.actions.push(Box::new(move |m| {
-                            crate::instructions::execute::handle_jalr(m, inst)
-                        }));
-                    }
+                    insts::OP_ADC => v_trace.actions.push(Box::new(move |m| {
+                        crate::instructions::execute::handle_adc(m, inst)
+                    })),
+                    insts::OP_SBB => v_trace.actions.push(Box::new(move |m| {
+                        crate::instructions::execute::handle_sbb(m, inst)
+                    })),
+                    insts::OP_CUSTOM_LOAD_IMM => v_trace.actions.push(Box::new(move |m| {
+                        crate::instructions::execute::handle_custom_load_imm(m, inst)
+                    })),
+                    insts::OP_AUIPC => v_trace.actions.push(Box::new(move |m| {
+                        crate::instructions::execute::handle_auipc(m, inst)
+                    })),
+                    insts::OP_BEQ => v_trace.actions.push(Box::new(move |m| {
+                        crate::instructions::execute::handle_beq(m, inst)
+                    })),
+                    insts::OP_BGE => v_trace.actions.push(Box::new(move |m| {
+                        crate::instructions::execute::handle_bge(m, inst)
+                    })),
+                    insts::OP_BGEU => v_trace.actions.push(Box::new(move |m| {
+                        crate::instructions::execute::handle_bgeu(m, inst)
+                    })),
+                    insts::OP_BLT => v_trace.actions.push(Box::new(move |m| {
+                        crate::instructions::execute::handle_blt(m, inst)
+                    })),
+                    insts::OP_BLTU => v_trace.actions.push(Box::new(move |m| {
+                        crate::instructions::execute::handle_bltu(m, inst)
+                    })),
+                    insts::OP_BNE => v_trace.actions.push(Box::new(move |m| {
+                        crate::instructions::execute::handle_bne(m, inst)
+                    })),
+                    insts::OP_EBREAK => v_trace.actions.push(Box::new(move |m| {
+                        crate::instructions::execute::handle_ebreak(m, inst)
+                    })),
+                    insts::OP_ECALL => v_trace.actions.push(Box::new(move |m| {
+                        crate::instructions::execute::handle_ecall(m, inst)
+                    })),
+                    insts::OP_JAL => v_trace.actions.push(Box::new(move |m| {
+                        crate::instructions::execute::handle_jal(m, inst)
+                    })),
+                    insts::OP_JALR => v_trace.actions.push(Box::new(move |m| {
+                        crate::instructions::execute::handle_jalr(m, inst)
+                    })),
+                    insts::OP_FAR_JUMP_REL => v_trace.actions.push(Box::new(move |m| {
+                        crate::instructions::execute::handle_far_jump_rel(m, inst)
+                    })),
+                    insts::OP_FAR_JUMP_ABS => v_trace.actions.push(Box::new(move |m| {
+                        crate::instructions::execute::handle_far_jump_abs(m, inst)
+                    })),
+                    insts::OP_CUSTOM_TRACE_END => v_trace.actions.push(Box::new(move |m| {
+                        crate::instructions::execute::handle_custom_trace_end(m, inst)
+                    })),
                     _ => panic!(
                         "Unexpected IMC instruction: {}",
                         insts::instruction_opcode_name(opcode)
