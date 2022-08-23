@@ -1,10 +1,10 @@
 use crate::{
     decoder::{build_decoder, Decoder},
     instructions::{
-        blank_instruction, execute_instruction, extract_opcode, instruction_length,
-        is_basic_block_end_instruction, is_slowpath_instruction,
+        blank_instruction, execute_instruction, extract_opcode, generate_comply_function_list,
+        instruction_length, is_basic_block_end_instruction, is_slowpath_instruction,
     },
-    machine::{execute, generate_comply_function_list, generate_handle_function_list, VERSION0},
+    machine::{execute, generate_handle_function_list, VERSION0},
     memory::{
         fill_page_data, get_page_indices, memset, round_page_down, round_page_up, FLAG_DIRTY,
         FLAG_EXECUTABLE, FLAG_FREEZED, FLAG_WRITABLE, FLAG_WXORX_BIT,

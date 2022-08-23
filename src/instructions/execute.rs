@@ -1256,12 +1256,12 @@ pub fn handle_vlm_v<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Resul
 }
 
 pub fn vcheck_vle8_v<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    vcheck_ld!(inst, machine, machine.vl(), 0, 1, 1);
+    vcheck_vle!(inst, machine, machine.vl(), 1);
     Ok(())
 }
 
 pub fn comply_vle8_v<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    comply_ld!(inst, machine, machine.vl(), 0, 1, 1);
+    comply_vle!(inst, machine, machine.vl(), 1);
     Ok(())
 }
 
@@ -1272,12 +1272,12 @@ pub fn handle_vle8_v<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Resu
 }
 
 pub fn vcheck_vle16_v<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    vcheck_ld!(inst, machine, machine.vl(), 0, 2, 1);
+    vcheck_vle!(inst, machine, machine.vl(), 2);
     Ok(())
 }
 
 pub fn comply_vle16_v<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    comply_ld!(inst, machine, machine.vl(), 0, 2, 1);
+    comply_vle!(inst, machine, machine.vl(), 2);
     Ok(())
 }
 
@@ -1288,12 +1288,12 @@ pub fn handle_vle16_v<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Res
 }
 
 pub fn vcheck_vle32_v<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    vcheck_ld!(inst, machine, machine.vl(), 0, 4, 1);
+    vcheck_vle!(inst, machine, machine.vl(), 4);
     Ok(())
 }
 
 pub fn comply_vle32_v<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    comply_ld!(inst, machine, machine.vl(), 0, 4, 1);
+    comply_vle!(inst, machine, machine.vl(), 4);
     Ok(())
 }
 
@@ -1304,12 +1304,12 @@ pub fn handle_vle32_v<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Res
 }
 
 pub fn vcheck_vle64_v<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    vcheck_ld!(inst, machine, machine.vl(), 0, 8, 1);
+    vcheck_vle!(inst, machine, machine.vl(), 8);
     Ok(())
 }
 
 pub fn comply_vle64_v<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    comply_ld!(inst, machine, machine.vl(), 0, 8, 1);
+    comply_vle!(inst, machine, machine.vl(), 8);
     Ok(())
 }
 
@@ -1320,12 +1320,12 @@ pub fn handle_vle64_v<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Res
 }
 
 pub fn vcheck_vle128_v<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    vcheck_ld!(inst, machine, machine.vl(), 0, 16, 1);
+    vcheck_vle!(inst, machine, machine.vl(), 16);
     Ok(())
 }
 
 pub fn comply_vle128_v<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    comply_ld!(inst, machine, machine.vl(), 0, 16, 1);
+    comply_vle!(inst, machine, machine.vl(), 16);
     Ok(())
 }
 
@@ -1336,12 +1336,12 @@ pub fn handle_vle128_v<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Re
 }
 
 pub fn vcheck_vle256_v<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    vcheck_ld!(inst, machine, machine.vl(), 0, 32, 1);
+    vcheck_vle!(inst, machine, machine.vl(), 32);
     Ok(())
 }
 
 pub fn comply_vle256_v<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    comply_ld!(inst, machine, machine.vl(), 0, 32, 1);
+    comply_vle!(inst, machine, machine.vl(), 32);
     Ok(())
 }
 
@@ -1352,12 +1352,12 @@ pub fn handle_vle256_v<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Re
 }
 
 pub fn vcheck_vle512_v<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    vcheck_ld!(inst, machine, machine.vl(), 0, 64, 1);
+    vcheck_vle!(inst, machine, machine.vl(), 64);
     Ok(())
 }
 
 pub fn comply_vle512_v<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    comply_ld!(inst, machine, machine.vl(), 0, 64, 1);
+    comply_vle!(inst, machine, machine.vl(), 64);
     Ok(())
 }
 
@@ -1368,12 +1368,12 @@ pub fn handle_vle512_v<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Re
 }
 
 pub fn vcheck_vle1024_v<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    vcheck_ld!(inst, machine, machine.vl(), 0, 128, 1);
+    vcheck_vle!(inst, machine, machine.vl(), 128);
     Ok(())
 }
 
 pub fn comply_vle1024_v<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    comply_ld!(inst, machine, machine.vl(), 0, 128, 1);
+    comply_vle!(inst, machine, machine.vl(), 128);
     Ok(())
 }
 
@@ -1400,12 +1400,12 @@ pub fn handle_vsm_v<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Resul
 }
 
 pub fn vcheck_vse8_v<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    vcheck_sd!(inst, machine, machine.vl(), 0, 1, 1);
+    vcheck_vse!(inst, machine, machine.vl(), 1);
     Ok(())
 }
 
 pub fn comply_vse8_v<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    comply_sd!(inst, machine, machine.vl(), 0, 1, 1);
+    comply_vse!(inst, machine, machine.vl(), 1);
     Ok(())
 }
 
@@ -1416,12 +1416,12 @@ pub fn handle_vse8_v<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Resu
 }
 
 pub fn vcheck_vse16_v<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    vcheck_sd!(inst, machine, machine.vl(), 0, 2, 1);
+    vcheck_vse!(inst, machine, machine.vl(), 2);
     Ok(())
 }
 
 pub fn comply_vse16_v<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    comply_sd!(inst, machine, machine.vl(), 0, 2, 1);
+    comply_vse!(inst, machine, machine.vl(), 2);
     Ok(())
 }
 
@@ -1432,12 +1432,12 @@ pub fn handle_vse16_v<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Res
 }
 
 pub fn vcheck_vse32_v<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    vcheck_sd!(inst, machine, machine.vl(), 0, 4, 1);
+    vcheck_vse!(inst, machine, machine.vl(), 4);
     Ok(())
 }
 
 pub fn comply_vse32_v<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    comply_sd!(inst, machine, machine.vl(), 0, 4, 1);
+    comply_vse!(inst, machine, machine.vl(), 4);
     Ok(())
 }
 
@@ -1448,12 +1448,12 @@ pub fn handle_vse32_v<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Res
 }
 
 pub fn vcheck_vse64_v<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    vcheck_sd!(inst, machine, machine.vl(), 0, 8, 1);
+    vcheck_vse!(inst, machine, machine.vl(), 8);
     Ok(())
 }
 
 pub fn comply_vse64_v<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    comply_sd!(inst, machine, machine.vl(), 0, 8, 1);
+    comply_vse!(inst, machine, machine.vl(), 8);
     Ok(())
 }
 
@@ -1464,12 +1464,12 @@ pub fn handle_vse64_v<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Res
 }
 
 pub fn vcheck_vse128_v<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    vcheck_sd!(inst, machine, machine.vl(), 0, 16, 1);
+    vcheck_vse!(inst, machine, machine.vl(), 16);
     Ok(())
 }
 
 pub fn comply_vse128_v<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    comply_sd!(inst, machine, machine.vl(), 0, 16, 1);
+    comply_vse!(inst, machine, machine.vl(), 16);
     Ok(())
 }
 
@@ -1480,12 +1480,12 @@ pub fn handle_vse128_v<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Re
 }
 
 pub fn vcheck_vse256_v<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    vcheck_sd!(inst, machine, machine.vl(), 0, 32, 1);
+    vcheck_vse!(inst, machine, machine.vl(), 32);
     Ok(())
 }
 
 pub fn comply_vse256_v<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    comply_sd!(inst, machine, machine.vl(), 0, 32, 1);
+    comply_vse!(inst, machine, machine.vl(), 32);
     Ok(())
 }
 
@@ -1496,12 +1496,12 @@ pub fn handle_vse256_v<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Re
 }
 
 pub fn vcheck_vse512_v<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    vcheck_sd!(inst, machine, machine.vl(), 0, 64, 1);
+    vcheck_vse!(inst, machine, machine.vl(), 64);
     Ok(())
 }
 
 pub fn comply_vse512_v<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    comply_sd!(inst, machine, machine.vl(), 0, 64, 1);
+    comply_vse!(inst, machine, machine.vl(), 64);
     Ok(())
 }
 
@@ -1512,12 +1512,12 @@ pub fn handle_vse512_v<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Re
 }
 
 pub fn vcheck_vse1024_v<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    vcheck_sd!(inst, machine, machine.vl(), 0, 128, 1);
+    vcheck_vse!(inst, machine, machine.vl(), 128);
     Ok(())
 }
 
 pub fn comply_vse1024_v<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    comply_sd!(inst, machine, machine.vl(), 0, 128, 1);
+    comply_vse!(inst, machine, machine.vl(), 128);
     Ok(())
 }
 
@@ -2348,7 +2348,7 @@ pub fn handle_vs8r_v<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Resu
 }
 
 pub fn vcheck_vadd_vv<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    vcheck_v_vv_loop_s!(inst, machine, Eint::wrapping_add);
+    vcheck_v_vv_loop_s!(inst, machine);
     Ok(())
 }
 
@@ -2396,7 +2396,7 @@ pub fn handle_vadd_vi<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Res
 }
 
 pub fn vcheck_vsub_vv<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    vcheck_v_vv_loop_s!(inst, machine, Eint::wrapping_sub);
+    vcheck_v_vv_loop_s!(inst, machine);
     Ok(())
 }
 
@@ -3052,7 +3052,7 @@ pub fn handle_vmsbc_vx<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Re
 }
 
 pub fn vcheck_vand_vv<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    vcheck_v_vv_loop_s!(inst, machine, alu::and);
+    vcheck_v_vv_loop_s!(inst, machine);
     Ok(())
 }
 
@@ -3100,7 +3100,7 @@ pub fn handle_vand_vi<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Res
 }
 
 pub fn vcheck_vor_vv<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    vcheck_v_vv_loop_s!(inst, machine, alu::or);
+    vcheck_v_vv_loop_s!(inst, machine);
     Ok(())
 }
 
@@ -3148,7 +3148,7 @@ pub fn handle_vor_vi<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Resu
 }
 
 pub fn vcheck_vxor_vv<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    vcheck_v_vv_loop_s!(inst, machine, alu::xor);
+    vcheck_v_vv_loop_s!(inst, machine);
     Ok(())
 }
 
@@ -3196,7 +3196,7 @@ pub fn handle_vxor_vi<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Res
 }
 
 pub fn vcheck_vsll_vv<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    vcheck_v_vv_loop_s!(inst, machine, alu::sll);
+    vcheck_v_vv_loop_s!(inst, machine);
     Ok(())
 }
 
@@ -3244,7 +3244,7 @@ pub fn handle_vsll_vi<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Res
 }
 
 pub fn vcheck_vsrl_vv<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    vcheck_v_vv_loop_s!(inst, machine, alu::srl);
+    vcheck_v_vv_loop_s!(inst, machine);
     Ok(())
 }
 
@@ -3292,7 +3292,7 @@ pub fn handle_vsrl_vi<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Res
 }
 
 pub fn vcheck_vsra_vv<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    vcheck_v_vv_loop_s!(inst, machine, alu::sra);
+    vcheck_v_vv_loop_s!(inst, machine);
     Ok(())
 }
 
@@ -3756,7 +3756,7 @@ pub fn handle_vmsgt_vi<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Re
 }
 
 pub fn vcheck_vmaxu_vv<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    vcheck_v_vv_loop_u!(inst, machine, alu::maxu);
+    vcheck_v_vv_loop_u!(inst, machine);
     Ok(())
 }
 
@@ -3788,7 +3788,7 @@ pub fn handle_vmaxu_vx<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Re
 }
 
 pub fn vcheck_vmax_vv<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    vcheck_v_vv_loop_u!(inst, machine, alu::max);
+    vcheck_v_vv_loop_u!(inst, machine);
     Ok(())
 }
 
@@ -3820,7 +3820,7 @@ pub fn handle_vmax_vx<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Res
 }
 
 pub fn vcheck_vminu_vv<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    vcheck_v_vv_loop_u!(inst, machine, alu::minu);
+    vcheck_v_vv_loop_u!(inst, machine);
     Ok(())
 }
 
@@ -3852,7 +3852,7 @@ pub fn handle_vminu_vx<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Re
 }
 
 pub fn vcheck_vmin_vv<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    vcheck_v_vv_loop_u!(inst, machine, alu::min);
+    vcheck_v_vv_loop_u!(inst, machine);
     Ok(())
 }
 
@@ -3884,7 +3884,7 @@ pub fn handle_vmin_vx<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Res
 }
 
 pub fn vcheck_vmul_vv<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    vcheck_v_vv_loop_s!(inst, machine, Eint::wrapping_mul);
+    vcheck_v_vv_loop_s!(inst, machine);
     Ok(())
 }
 
@@ -3916,7 +3916,7 @@ pub fn handle_vmul_vx<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Res
 }
 
 pub fn vcheck_vmulh_vv<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    vcheck_v_vv_loop_s!(inst, machine, alu::mulh);
+    vcheck_v_vv_loop_s!(inst, machine);
     Ok(())
 }
 
@@ -3948,7 +3948,7 @@ pub fn handle_vmulh_vx<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Re
 }
 
 pub fn vcheck_vmulhu_vv<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    vcheck_v_vv_loop_s!(inst, machine, alu::mulhu);
+    vcheck_v_vv_loop_s!(inst, machine);
     Ok(())
 }
 
@@ -3980,7 +3980,7 @@ pub fn handle_vmulhu_vx<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> R
 }
 
 pub fn vcheck_vmulhsu_vv<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    vcheck_v_vv_loop_s!(inst, machine, alu::mulhsu);
+    vcheck_v_vv_loop_s!(inst, machine);
     Ok(())
 }
 
@@ -4012,7 +4012,7 @@ pub fn handle_vmulhsu_vx<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> 
 }
 
 pub fn vcheck_vdivu_vv<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    vcheck_v_vv_loop_u!(inst, machine, Eint::wrapping_div_u);
+    vcheck_v_vv_loop_u!(inst, machine);
     Ok(())
 }
 
@@ -4044,7 +4044,7 @@ pub fn handle_vdivu_vx<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Re
 }
 
 pub fn vcheck_vdiv_vv<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    vcheck_v_vv_loop_s!(inst, machine, Eint::wrapping_div_s);
+    vcheck_v_vv_loop_s!(inst, machine);
     Ok(())
 }
 
@@ -4076,7 +4076,7 @@ pub fn handle_vdiv_vx<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Res
 }
 
 pub fn vcheck_vremu_vv<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    vcheck_v_vv_loop_u!(inst, machine, Eint::wrapping_rem_u);
+    vcheck_v_vv_loop_u!(inst, machine);
     Ok(())
 }
 
@@ -4108,7 +4108,7 @@ pub fn handle_vremu_vx<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Re
 }
 
 pub fn vcheck_vrem_vv<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    vcheck_v_vv_loop_s!(inst, machine, Eint::wrapping_rem_s);
+    vcheck_v_vv_loop_s!(inst, machine);
     Ok(())
 }
 
@@ -4620,7 +4620,7 @@ pub fn handle_vnclip_wi<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> R
 }
 
 pub fn vcheck_vmv_v_v<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    vcheck_v_vv_loop_s!(inst, machine, alu::mv);
+    vcheck_v_vv_loop_s!(inst, machine);
     Ok(())
 }
 
@@ -4668,7 +4668,7 @@ pub fn handle_vmv_v_i<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Res
 }
 
 pub fn vcheck_vsaddu_vv<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    vcheck_v_vv_loop_u!(inst, machine, alu::saddu);
+    vcheck_v_vv_loop_u!(inst, machine);
     Ok(())
 }
 
@@ -4716,7 +4716,7 @@ pub fn handle_vsaddu_vi<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> R
 }
 
 pub fn vcheck_vsadd_vv<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    vcheck_v_vv_loop_s!(inst, machine, alu::sadd);
+    vcheck_v_vv_loop_s!(inst, machine);
     Ok(())
 }
 
@@ -4764,7 +4764,7 @@ pub fn handle_vsadd_vi<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Re
 }
 
 pub fn vcheck_vssubu_vv<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    vcheck_v_vv_loop_u!(inst, machine, alu::ssubu);
+    vcheck_v_vv_loop_u!(inst, machine);
     Ok(())
 }
 
@@ -4796,7 +4796,7 @@ pub fn handle_vssubu_vx<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> R
 }
 
 pub fn vcheck_vssub_vv<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    vcheck_v_vv_loop_s!(inst, machine, alu::ssub);
+    vcheck_v_vv_loop_s!(inst, machine);
     Ok(())
 }
 
@@ -4828,7 +4828,7 @@ pub fn handle_vssub_vx<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Re
 }
 
 pub fn vcheck_vaadd_vv<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    vcheck_v_vv_loop_s!(inst, machine, Eint::average_add_s);
+    vcheck_v_vv_loop_s!(inst, machine);
     Ok(())
 }
 
@@ -4860,7 +4860,7 @@ pub fn handle_vaadd_vx<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Re
 }
 
 pub fn vcheck_vaaddu_vv<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    vcheck_v_vv_loop_u!(inst, machine, Eint::average_add_u);
+    vcheck_v_vv_loop_u!(inst, machine);
     Ok(())
 }
 
@@ -4892,7 +4892,7 @@ pub fn handle_vaaddu_vx<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> R
 }
 
 pub fn vcheck_vasub_vv<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    vcheck_v_vv_loop_s!(inst, machine, Eint::average_sub_s);
+    vcheck_v_vv_loop_s!(inst, machine);
     Ok(())
 }
 
@@ -4924,7 +4924,7 @@ pub fn handle_vasub_vx<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Re
 }
 
 pub fn vcheck_vasubu_vv<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    vcheck_v_vv_loop_u!(inst, machine, Eint::average_sub_u);
+    vcheck_v_vv_loop_u!(inst, machine);
     Ok(())
 }
 
@@ -4956,7 +4956,7 @@ pub fn handle_vasubu_vx<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> R
 }
 
 pub fn vcheck_vsmul_vv<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    vcheck_v_vv_loop_s!(inst, machine, alu::smul);
+    vcheck_v_vv_loop_s!(inst, machine);
     Ok(())
 }
 
@@ -4988,7 +4988,7 @@ pub fn handle_vsmul_vx<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Re
 }
 
 pub fn vcheck_vssrl_vv<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    vcheck_v_vv_loop_u!(inst, machine, alu::srl);
+    vcheck_v_vv_loop_u!(inst, machine);
     Ok(())
 }
 
@@ -5036,7 +5036,7 @@ pub fn handle_vssrl_vi<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Re
 }
 
 pub fn vcheck_vssra_vv<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    vcheck_v_vv_loop_u!(inst, machine, alu::sra);
+    vcheck_v_vv_loop_u!(inst, machine);
     Ok(())
 }
 
