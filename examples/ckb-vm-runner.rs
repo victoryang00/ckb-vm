@@ -1,7 +1,9 @@
+use byteorder::WriteBytesExt;
 use ckb_vm::instructions::cost_model::instruction_cycles;
 use ckb_vm::registers::{A0, A7};
 use ckb_vm::{Bytes, CoreMachine, Memory, Register, SupportMachine, Syscalls};
 use std::io::Write;
+use std::time::SystemTime;
 
 pub struct DebugSyscall {}
 
@@ -32,8 +34,38 @@ impl<Mac: SupportMachine> Syscalls<Mac> for DebugSyscall {
         }
 
         std::io::stdout().write(&buffer)?;
+        if buffer.last().copied() != Some('\n' as u8) {
+            std::io::stdout().write_u8('\n' as u8)?;
+        }
 
         Ok(true)
+    }
+}
+
+pub struct TimeSyscall {}
+
+impl TimeSyscall {
+    pub fn new() -> Self {
+        Self {}
+    }
+}
+
+impl<Mac: SupportMachine> Syscalls<Mac> for TimeSyscall {
+    fn initialize(&mut self, _machine: &mut Mac) -> Result<(), ckb_vm::error::Error> {
+        Ok(())
+    }
+
+    fn ecall(&mut self, machine: &mut Mac) -> Result<bool, ckb_vm::error::Error> {
+        let id = machine.registers()[A7].to_u64();
+        if id != 9001 {
+            return Ok(false);
+        }
+        let duration = SystemTime::now()
+            .duration_since(SystemTime::UNIX_EPOCH)
+            .unwrap();
+        let now = duration.as_nanos();
+        machine.set_register(A0, Mac::REG::from_u64(now as u64));
+        return Ok(true);
     }
 }
 
@@ -55,6 +87,7 @@ fn main_aot(code: Bytes, args: Vec<Bytes>) -> Result<(), Box<dyn std::error::Err
         ckb_vm::DefaultMachineBuilder::<Box<ckb_vm::machine::asm::AsmCoreMachine>>::new(asm_core)
             .instruction_cycle_func(Box::new(instruction_cycles))
             .syscall(Box::new(DebugSyscall {}))
+            .syscall(Box::new(TimeSyscall {}))
             .build();
     let mut machine =
         ckb_vm::machine::asm::AsmMachine::new(core, Some(std::sync::Arc::new(aot_code)));
@@ -85,6 +118,7 @@ fn main_asm(code: Bytes, args: Vec<Bytes>) -> Result<(), Box<dyn std::error::Err
     let core = ckb_vm::DefaultMachineBuilder::new(asm_core)
         .instruction_cycle_func(Box::new(instruction_cycles))
         .syscall(Box::new(DebugSyscall {}))
+        .syscall(Box::new(TimeSyscall {}))
         .build();
     let mut machine = ckb_vm::machine::asm::AsmMachine::new(core, None);
     machine.load_program(&code, &args)?;
@@ -108,7 +142,10 @@ fn main_int(code: Bytes, args: Vec<Bytes>) -> Result<(), Box<dyn std::error::Err
     );
     let machine_builder = ckb_vm::DefaultMachineBuilder::new(core_machine)
         .instruction_cycle_func(Box::new(instruction_cycles));
-    let mut machine = machine_builder.syscall(Box::new(DebugSyscall {})).build();
+    let mut machine = machine_builder
+        .syscall(Box::new(DebugSyscall {}))
+        .syscall(Box::new(TimeSyscall {}))
+        .build();
     machine.load_program(&code, &args)?;
     let exit = machine.run();
     let cycles = machine.cycles();
