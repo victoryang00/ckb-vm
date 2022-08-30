@@ -131,7 +131,7 @@ macro_rules! vcheck_vle {
     };
 }
 
-macro_rules! comply_vle {
+macro_rules! handle_vle {
     ($inst:expr, $machine:expr, $vl:expr, $size:expr) => {
         let i = VXtype($inst);
         let vd = i.vd();
@@ -181,7 +181,7 @@ macro_rules! vcheck_ld {
     };
 }
 
-macro_rules! comply_ld {
+macro_rules! handle_ld {
     ($inst:expr, $machine:expr, $vl:expr, $stride:expr, $size:expr, $mask:expr) => {
         let i = VXtype($inst);
         let vd = i.vd();
@@ -232,7 +232,7 @@ macro_rules! vcheck_ld_index {
     };
 }
 
-macro_rules! comply_ld_index {
+macro_rules! handle_ld_index {
     ($inst:expr, $machine:expr, $size:expr) => {
         let i = VXtype($inst);
         let vd = i.vd();
@@ -376,7 +376,7 @@ macro_rules! vcheck_ld_whole {
     };
 }
 
-macro_rules! comply_ld_whole {
+macro_rules! handle_ld_whole {
     ($inst:expr, $machine:expr, $size:expr) => {
         let i = VXtype($inst);
         let addr = $machine.registers()[i.rs1()].to_u64();
@@ -405,7 +405,7 @@ macro_rules! vcheck_vse {
     };
 }
 
-macro_rules! comply_vse {
+macro_rules! handle_vse {
     ($inst:expr, $machine:expr, $vl:expr, $size:expr) => {
         let i = VXtype($inst);
         let vd = i.vd();
@@ -450,7 +450,7 @@ macro_rules! vcheck_sd {
     };
 }
 
-macro_rules! comply_sd {
+macro_rules! handle_sd {
     ($inst:expr, $machine:expr, $vl:expr, $stride:expr, $size:expr, $mask:expr) => {
         let i = VXtype($inst);
         let vd = i.vd();
@@ -487,7 +487,7 @@ macro_rules! vcheck_sd_index {
     };
 }
 
-macro_rules! comply_sd_index {
+macro_rules! handle_sd_index {
     ($inst:expr, $machine:expr, $size:expr) => {
         let sew = $machine.vsew();
         let i = VXtype($inst);
@@ -615,7 +615,7 @@ macro_rules! vcheck_sd_whole {
     };
 }
 
-macro_rules! comply_sd_whole {
+macro_rules! handle_sd_whole {
     ($inst:expr, $machine:expr, $size:expr) => {
         let i = VXtype($inst);
         let addr = $machine.registers()[i.rs1()].to_u64();
@@ -636,7 +636,7 @@ macro_rules! vcheck_v_vv_loop {
     };
 }
 
-macro_rules! comply_v_vv_loop {
+macro_rules! handle_v_vv_loop {
     ($inst:expr, $machine:expr, $body:expr) => {
         let sew = $machine.vsew();
         let i = VVtype($inst);
@@ -705,9 +705,9 @@ macro_rules! vcheck_v_vv_loop_s {
     };
 }
 
-macro_rules! comply_v_vv_loop_s {
+macro_rules! handle_v_vv_loop_s {
     ($inst:expr, $machine:expr, $body:expr) => {
-        comply_v_vv_loop!($inst, $machine, $body);
+        handle_v_vv_loop!($inst, $machine, $body);
     };
 }
 
@@ -717,9 +717,9 @@ macro_rules! vcheck_v_vv_loop_u {
     };
 }
 
-macro_rules! comply_v_vv_loop_u {
+macro_rules! handle_v_vv_loop_u {
     ($inst:expr, $machine:expr, $body:expr) => {
-        comply_v_vv_loop!($inst, $machine, $body);
+        handle_v_vv_loop!($inst, $machine, $body);
     };
 }
 
@@ -734,7 +734,7 @@ macro_rules! vcheck_v_vx_loop {
     };
 }
 
-macro_rules! comply_v_vx_loop {
+macro_rules! handle_v_vx_loop {
     ($inst:expr, $machine:expr, $body:expr, $sign:expr) => {
         let sew = $machine.vsew();
         let i = VXtype($inst);
@@ -835,9 +835,9 @@ macro_rules! vcheck_v_vx_loop_s {
     };
 }
 
-macro_rules! comply_v_vx_loop_s {
+macro_rules! handle_v_vx_loop_s {
     ($inst:expr, $machine:expr, $body:expr) => {
-        comply_v_vx_loop!($inst, $machine, $body, 1);
+        handle_v_vx_loop!($inst, $machine, $body, 1);
     };
 }
 
@@ -847,9 +847,9 @@ macro_rules! vcheck_v_vx_loop_u {
     };
 }
 
-macro_rules! comply_v_vx_loop_u {
+macro_rules! handle_v_vx_loop_u {
     ($inst:expr, $machine:expr, $body:expr) => {
-        comply_v_vx_loop!($inst, $machine, $body, 0);
+        handle_v_vx_loop!($inst, $machine, $body, 0);
     };
 }
 
@@ -864,7 +864,7 @@ macro_rules! vcheck_v_vi_loop {
     };
 }
 
-macro_rules! comply_v_vi_loop {
+macro_rules! handle_v_vi_loop {
     ($inst:expr, $machine:expr, $body:expr, $sign:expr) => {
         let sew = $machine.vsew();
         let i = VItype($inst);
@@ -965,9 +965,9 @@ macro_rules! vcheck_v_vi_loop_s {
     };
 }
 
-macro_rules! comply_v_vi_loop_s {
+macro_rules! handle_v_vi_loop_s {
     ($inst:expr, $machine:expr, $body:expr) => {
-        comply_v_vi_loop!($inst, $machine, $body, 1);
+        handle_v_vi_loop!($inst, $machine, $body, 1);
     };
 }
 
@@ -977,9 +977,9 @@ macro_rules! vcheck_v_vi_loop_u {
     };
 }
 
-macro_rules! comply_v_vi_loop_u {
+macro_rules! handle_v_vi_loop_u {
     ($inst:expr, $machine:expr, $body:expr) => {
-        comply_v_vi_loop!($inst, $machine, $body, 0);
+        handle_v_vi_loop!($inst, $machine, $body, 0);
     };
 }
 
@@ -996,7 +996,7 @@ macro_rules! vcheck_m_vv_loop {
     };
 }
 
-macro_rules! comply_m_vv_loop {
+macro_rules! handle_m_vv_loop {
     ($inst:expr, $machine:expr, $cond:expr) => {
         let sew = $machine.vsew();
         let i = VVtype($inst);
@@ -1089,9 +1089,9 @@ macro_rules! vcheck_m_vv_loop_s {
     };
 }
 
-macro_rules! comply_m_vv_loop_s {
+macro_rules! handle_m_vv_loop_s {
     ($inst:expr, $machine:expr, $body:expr) => {
-        comply_m_vv_loop!($inst, $machine, $body);
+        handle_m_vv_loop!($inst, $machine, $body);
     };
 }
 
@@ -1107,7 +1107,7 @@ macro_rules! vcheck_m_vx_loop {
     };
 }
 
-macro_rules! comply_m_vx_loop {
+macro_rules! handle_m_vx_loop {
     ($inst:expr, $machine:expr, $cond:expr, $sign:expr) => {
         let sew = $machine.vsew();
         let i = VXtype($inst);
@@ -1232,9 +1232,9 @@ macro_rules! vcheck_m_vx_loop_s {
     };
 }
 
-macro_rules! comply_m_vx_loop_s {
+macro_rules! handle_m_vx_loop_s {
     ($inst:expr, $machine:expr, $cond:expr) => {
-        comply_m_vx_loop!($inst, $machine, $cond, 1);
+        handle_m_vx_loop!($inst, $machine, $cond, 1);
     };
 }
 
@@ -1250,7 +1250,7 @@ macro_rules! vcheck_m_vi_loop {
     };
 }
 
-macro_rules! comply_m_vi_loop {
+macro_rules! handle_m_vi_loop {
     ($inst:expr, $machine:expr, $cond:expr, $sign:expr) => {
         let lmul = $machine.vlmul();
         let sew = $machine.vsew();
@@ -1379,9 +1379,9 @@ macro_rules! vcheck_m_vi_loop_s {
     };
 }
 
-macro_rules! comply_m_vi_loop_s {
+macro_rules! handle_m_vi_loop_s {
     ($inst:expr, $machine:expr, $cond:expr) => {
-        comply_m_vi_loop!($inst, $machine, $cond, 1);
+        handle_m_vi_loop!($inst, $machine, $cond, 1);
     };
 }
 
@@ -1391,7 +1391,7 @@ macro_rules! vcheck_m_mm_loop {
     };
 }
 
-macro_rules! comply_m_mm_loop {
+macro_rules! handle_m_mm_loop {
     ($inst:expr, $machine:expr, $body:expr) => {
         let i = VVtype($inst);
         for j in 0..$machine.vl() as usize {
@@ -1429,7 +1429,7 @@ macro_rules! vcheck_w_vv_loop {
     };
 }
 
-macro_rules! comply_w_vv_loop {
+macro_rules! handle_w_vv_loop {
     ($inst:expr, $machine:expr, $body:expr) => {
         let sew = $machine.vsew();
         let i = VVtype($inst);
@@ -1506,9 +1506,9 @@ macro_rules! vcheck_w_vv_loop_s {
     };
 }
 
-macro_rules! comply_w_vv_loop_s {
+macro_rules! handle_w_vv_loop_s {
     ($inst:expr, $machine:expr, $cond:expr) => {
-        comply_w_vv_loop!($inst, $machine, $cond);
+        handle_w_vv_loop!($inst, $machine, $cond);
     };
 }
 
@@ -1518,9 +1518,9 @@ macro_rules! vcheck_w_vv_loop_u {
     };
 }
 
-macro_rules! comply_w_vv_loop_u {
+macro_rules! handle_w_vv_loop_u {
     ($inst:expr, $machine:expr, $cond:expr) => {
-        comply_w_vv_loop!($inst, $machine, $cond);
+        handle_w_vv_loop!($inst, $machine, $cond);
     };
 }
 
@@ -1544,7 +1544,7 @@ macro_rules! vcheck_w_vx_loop {
     };
 }
 
-macro_rules! comply_w_vx_loop {
+macro_rules! handle_w_vx_loop {
     ($inst:expr, $machine:expr, $body:expr, $sign:expr) => {
         let sew = $machine.vsew();
         let i = VXtype($inst);
@@ -1653,9 +1653,9 @@ macro_rules! vcheck_w_vx_loop_s {
     };
 }
 
-macro_rules! comply_w_vx_loop_s {
+macro_rules! handle_w_vx_loop_s {
     ($inst:expr, $machine:expr, $body:expr) => {
-        comply_w_vx_loop!($inst, $machine, $body, 1);
+        handle_w_vx_loop!($inst, $machine, $body, 1);
     };
 }
 
@@ -1665,9 +1665,9 @@ macro_rules! vcheck_w_vx_loop_u {
     };
 }
 
-macro_rules! comply_w_vx_loop_u {
+macro_rules! handle_w_vx_loop_u {
     ($inst:expr, $machine:expr, $body:expr) => {
-        comply_w_vx_loop!($inst, $machine, $body, 0);
+        handle_w_vx_loop!($inst, $machine, $body, 0);
     };
 }
 
@@ -1692,7 +1692,7 @@ macro_rules! vcheck_w_wv_loop {
     };
 }
 
-macro_rules! comply_w_wv_loop {
+macro_rules! handle_w_wv_loop {
     ($inst:expr, $machine:expr, $body:expr, $sign:expr) => {
         let sew = $machine.vsew();
         let i = VVtype($inst);
@@ -1793,9 +1793,9 @@ macro_rules! vcheck_w_wv_loop_s {
     };
 }
 
-macro_rules! comply_w_wv_loop_s {
+macro_rules! handle_w_wv_loop_s {
     ($inst:expr, $machine:expr, $body:expr) => {
-        comply_w_wv_loop!($inst, $machine, $body, 1);
+        handle_w_wv_loop!($inst, $machine, $body, 1);
     };
 }
 
@@ -1805,9 +1805,9 @@ macro_rules! vcheck_w_wv_loop_u {
     };
 }
 
-macro_rules! comply_w_wv_loop_u {
+macro_rules! handle_w_wv_loop_u {
     ($inst:expr, $machine:expr, $body:expr) => {
-        comply_w_wv_loop!($inst, $machine, $body, 0);
+        handle_w_wv_loop!($inst, $machine, $body, 0);
     };
 }
 
@@ -1826,7 +1826,7 @@ macro_rules! vcheck_w_wx_loop {
     };
 }
 
-macro_rules! comply_w_wx_loop {
+macro_rules! handle_w_wx_loop {
     ($inst:expr, $machine:expr, $body:expr, $sign:expr) => {
         let sew = $machine.vsew();
         let i = VXtype($inst);
@@ -1927,9 +1927,9 @@ macro_rules! vcheck_w_wx_loop_s {
     };
 }
 
-macro_rules! comply_w_wx_loop_s {
+macro_rules! handle_w_wx_loop_s {
     ($inst:expr, $machine:expr, $body:expr) => {
-        comply_w_wx_loop!($inst, $machine, $body, 1);
+        handle_w_wx_loop!($inst, $machine, $body, 1);
     };
 }
 
@@ -1939,9 +1939,9 @@ macro_rules! vcheck_w_wx_loop_u {
     };
 }
 
-macro_rules! comply_w_wx_loop_u {
+macro_rules! handle_w_wx_loop_u {
     ($inst:expr, $machine:expr, $body:expr) => {
-        comply_w_wx_loop!($inst, $machine, $body, 0);
+        handle_w_wx_loop!($inst, $machine, $body, 0);
     };
 }
 
@@ -1964,7 +1964,7 @@ macro_rules! vcheck_v_wv_loop {
     };
 }
 
-macro_rules! comply_v_wv_loop {
+macro_rules! handle_v_wv_loop {
     ($inst:expr, $machine:expr, $body:expr, $size:expr) => {
         let sew = $machine.vsew();
         let i = VVtype($inst);
@@ -2065,9 +2065,9 @@ macro_rules! vcheck_v_wv_loop_u {
     };
 }
 
-macro_rules! comply_v_wv_loop_u {
+macro_rules! handle_v_wv_loop_u {
     ($inst:expr, $machine:expr, $body:expr) => {
-        comply_v_wv_loop!($inst, $machine, $body, 0);
+        handle_v_wv_loop!($inst, $machine, $body, 0);
     };
 }
 
@@ -2089,7 +2089,7 @@ macro_rules! vcheck_v_wx_loop {
     };
 }
 
-macro_rules! comply_v_wx_loop {
+macro_rules! handle_v_wx_loop {
     ($inst:expr, $machine:expr, $body:expr, $sign:expr) => {
         let sew = $machine.vsew();
         let i = VXtype($inst);
@@ -2190,9 +2190,9 @@ macro_rules! vcheck_v_wx_loop_u {
     };
 }
 
-macro_rules! comply_v_wx_loop_u {
+macro_rules! handle_v_wx_loop_u {
     ($inst:expr, $machine:expr, $body:expr) => {
-        comply_v_wx_loop!($inst, $machine, $body, 0);
+        handle_v_wx_loop!($inst, $machine, $body, 0);
     };
 }
 
@@ -2214,7 +2214,7 @@ macro_rules! vcheck_v_wi_loop {
     };
 }
 
-macro_rules! comply_v_wi_loop {
+macro_rules! handle_v_wi_loop {
     ($inst:expr, $machine:expr, $body:expr, $sign:expr) => {
         let sew = $machine.vsew();
         let i = VItype($inst);
@@ -2315,9 +2315,9 @@ macro_rules! vcheck_v_wi_loop_u {
     };
 }
 
-macro_rules! comply_v_wi_loop_u {
+macro_rules! handle_v_wi_loop_u {
     ($inst:expr, $machine:expr, $body:expr) => {
-        comply_v_wi_loop!($inst, $machine, $body, 0);
+        handle_v_wi_loop!($inst, $machine, $body, 0);
     };
 }
 
@@ -2333,7 +2333,7 @@ macro_rules! vcheck_v_vvm_loop {
     };
 }
 
-macro_rules! comply_v_vvm_loop {
+macro_rules! handle_v_vvm_loop {
     ($inst:expr, $machine:expr, $body:expr) => {
         let sew = $machine.vsew();
         let i = VVtype($inst);
@@ -2400,9 +2400,9 @@ macro_rules! vcheck_v_vvm_loop_s {
     };
 }
 
-macro_rules! comply_v_vvm_loop_s {
+macro_rules! handle_v_vvm_loop_s {
     ($inst:expr, $machine:expr, $body:expr) => {
-        comply_v_vvm_loop!($inst, $machine, $body);
+        handle_v_vvm_loop!($inst, $machine, $body);
     };
 }
 
@@ -2417,7 +2417,7 @@ macro_rules! vcheck_v_vxm_loop {
     };
 }
 
-macro_rules! comply_v_vxm_loop {
+macro_rules! handle_v_vxm_loop {
     ($inst:expr, $machine:expr, $body:expr, $sign:expr) => {
         let sew = $machine.vsew();
         let i = VXtype($inst);
@@ -2516,9 +2516,9 @@ macro_rules! vcheck_v_vxm_loop_s {
     };
 }
 
-macro_rules! comply_v_vxm_loop_s {
+macro_rules! handle_v_vxm_loop_s {
     ($inst:expr, $machine:expr, $body:expr) => {
-        comply_v_vxm_loop!($inst, $machine, $body, 1);
+        handle_v_vxm_loop!($inst, $machine, $body, 1);
     };
 }
 
@@ -2533,7 +2533,7 @@ macro_rules! vcheck_v_vim_loop {
     };
 }
 
-macro_rules! comply_v_vim_loop {
+macro_rules! handle_v_vim_loop {
     ($inst:expr, $machine:expr, $body:expr, $sign:expr) => {
         let sew = $machine.vsew();
         let i = VItype($inst);
@@ -2632,9 +2632,9 @@ macro_rules! vcheck_v_vim_loop_s {
     };
 }
 
-macro_rules! comply_v_vim_loop_s {
+macro_rules! handle_v_vim_loop_s {
     ($inst:expr, $machine:expr, $body:expr) => {
-        comply_v_vim_loop!($inst, $machine, $body, 1);
+        handle_v_vim_loop!($inst, $machine, $body, 1);
     };
 }
 
@@ -2654,7 +2654,7 @@ macro_rules! vcheck_m_vvm_loop {
     };
 }
 
-macro_rules! comply_m_vvm_loop {
+macro_rules! handle_m_vvm_loop {
     ($inst:expr, $machine:expr, $cond:expr) => {
         let sew = $machine.vsew();
         let i = VVtype($inst);
@@ -2745,9 +2745,9 @@ macro_rules! vcheck_m_vvm_loop_s {
     };
 }
 
-macro_rules! comply_m_vvm_loop_s {
+macro_rules! handle_m_vvm_loop_s {
     ($inst:expr, $machine:expr, $body:expr) => {
-        comply_m_vvm_loop!($inst, $machine, $body);
+        handle_m_vvm_loop!($inst, $machine, $body);
     };
 }
 
@@ -2763,7 +2763,7 @@ macro_rules! vcheck_m_vxm_loop {
     };
 }
 
-macro_rules! comply_m_vxm_loop {
+macro_rules! handle_m_vxm_loop {
     ($inst:expr, $machine:expr, $cond:expr, $sign:expr) => {
         let sew = $machine.vsew();
         let i = VXtype($inst);
@@ -2886,9 +2886,9 @@ macro_rules! vcheck_m_vxm_loop_s {
     };
 }
 
-macro_rules! comply_m_vxm_loop_s {
+macro_rules! handle_m_vxm_loop_s {
     ($inst:expr, $machine:expr, $cond:expr) => {
-        comply_m_vxm_loop!($inst, $machine, $cond, 1);
+        handle_m_vxm_loop!($inst, $machine, $cond, 1);
     };
 }
 
@@ -2904,7 +2904,7 @@ macro_rules! vcheck_m_vim_loop {
     };
 }
 
-macro_rules! comply_m_vim_loop {
+macro_rules! handle_m_vim_loop {
     ($inst:expr, $machine:expr, $cond:expr, $sign:expr) => {
         let sew = $machine.vsew();
         let i = VItype($inst);
@@ -3027,9 +3027,9 @@ macro_rules! vcheck_m_vim_loop_s {
     };
 }
 
-macro_rules! comply_m_vim_loop_s {
+macro_rules! handle_m_vim_loop_s {
     ($inst:expr, $machine:expr, $cond:expr) => {
-        comply_m_vim_loop!($inst, $machine, $cond, 1);
+        handle_m_vim_loop!($inst, $machine, $cond, 1);
     };
 }
 
@@ -3044,7 +3044,7 @@ macro_rules! vcheck_v_vv_loop_destructive {
         require_vm!(i);
     };
 }
-macro_rules! comply_v_vv_loop_destructive {
+macro_rules! handle_v_vv_loop_destructive {
     ($inst:expr, $machine:expr, $body:expr) => {
         let sew = $machine.vsew();
         let i = VVtype($inst);
@@ -3121,9 +3121,9 @@ macro_rules! vcheck_v_vv_loop_destructive_s {
     };
 }
 
-macro_rules! comply_v_vv_loop_destructive_s {
+macro_rules! handle_v_vv_loop_destructive_s {
     ($inst:expr, $machine:expr, $body:expr) => {
-        comply_v_vv_loop_destructive!($inst, $machine, $body);
+        handle_v_vv_loop_destructive!($inst, $machine, $body);
     };
 }
 
@@ -3138,7 +3138,7 @@ macro_rules! vcheck_v_vx_loop_destructive {
     };
 }
 
-macro_rules! comply_v_vx_loop_destructive {
+macro_rules! handle_v_vx_loop_destructive {
     ($inst:expr, $machine:expr, $body:expr, $sign:expr) => {
         let sew = $machine.vsew();
         let i = VXtype($inst);
@@ -3247,9 +3247,9 @@ macro_rules! vcheck_v_vx_loop_destructive_s {
     };
 }
 
-macro_rules! comply_v_vx_loop_destructive_s {
+macro_rules! handle_v_vx_loop_destructive_s {
     ($inst:expr, $machine:expr, $body:expr) => {
-        comply_v_vx_loop_destructive!($inst, $machine, $body, 1);
+        handle_v_vx_loop_destructive!($inst, $machine, $body, 1);
     };
 }
 
@@ -3276,7 +3276,7 @@ macro_rules! vcheck_w_vv_loop_destructive {
     };
 }
 
-macro_rules! comply_w_vv_loop_destructive {
+macro_rules! handle_w_vv_loop_destructive {
     ($inst:expr, $machine:expr, $body:expr) => {
         let sew = $machine.vsew();
         let i = VVtype($inst);
@@ -3369,9 +3369,9 @@ macro_rules! vcheck_w_vv_loop_destructive_s {
     };
 }
 
-macro_rules! comply_w_vv_loop_destructive_s {
+macro_rules! handle_w_vv_loop_destructive_s {
     ($inst:expr, $machine:expr, $body:expr) => {
-        comply_w_vv_loop_destructive!($inst, $machine, $body);
+        handle_w_vv_loop_destructive!($inst, $machine, $body);
     };
 }
 
@@ -3395,7 +3395,7 @@ macro_rules! vcheck_w_vx_loop_destructive {
     };
 }
 
-macro_rules! comply_w_vx_loop_destructive {
+macro_rules! handle_w_vx_loop_destructive {
     ($inst:expr, $machine:expr, $body:expr, $sign:expr) => {
         let sew = $machine.vsew();
         let i = VXtype($inst);
@@ -3520,9 +3520,9 @@ macro_rules! vcheck_w_vx_loop_destructive_s {
     };
 }
 
-macro_rules! comply_w_vx_loop_destructive_s {
+macro_rules! handle_w_vx_loop_destructive_s {
     ($inst:expr, $machine:expr, $body:expr) => {
-        comply_w_vx_loop_destructive!($inst, $machine, $body, 1);
+        handle_w_vx_loop_destructive!($inst, $machine, $body, 1);
     };
 }
 
@@ -3532,9 +3532,9 @@ macro_rules! vcheck_w_vx_loop_destructive_u {
     };
 }
 
-macro_rules! comply_w_vx_loop_destructive_u {
+macro_rules! handle_w_vx_loop_destructive_u {
     ($inst:expr, $machine:expr, $body:expr) => {
-        comply_w_vx_loop_destructive!($inst, $machine, $body, 0);
+        handle_w_vx_loop_destructive!($inst, $machine, $body, 0);
     };
 }
 
@@ -3547,7 +3547,7 @@ macro_rules! vcheck_v_vs_loop {
     };
 }
 
-macro_rules! comply_v_vs_loop {
+macro_rules! handle_v_vs_loop {
     ($inst:expr, $machine:expr, $body:expr) => {
         let sew = $machine.vsew();
         let i = VVtype($inst);
@@ -3653,9 +3653,9 @@ macro_rules! vcheck_v_vs_loop_s {
     };
 }
 
-macro_rules! comply_v_vs_loop_s {
+macro_rules! handle_v_vs_loop_s {
     ($inst:expr, $machine:expr, $body:expr) => {
-        comply_v_vs_loop!($inst, $machine, $body);
+        handle_v_vs_loop!($inst, $machine, $body);
     };
 }
 
@@ -3670,7 +3670,7 @@ macro_rules! vcheck_w_vs_loop {
     };
 }
 
-macro_rules! comply_w_vs_loop {
+macro_rules! handle_w_vs_loop {
     ($inst:expr, $machine:expr, $body:expr, $sign:expr) => {
         let sew = $machine.vsew();
         let i = VVtype($inst);
@@ -3808,9 +3808,9 @@ macro_rules! vcheck_w_vs_loop_s {
     };
 }
 
-macro_rules! comply_w_vs_loop_s {
+macro_rules! handle_w_vs_loop_s {
     ($inst:expr, $machine:expr, $body:expr) => {
-        comply_w_vs_loop!($inst, $machine, $body, 1);
+        handle_w_vs_loop!($inst, $machine, $body, 1);
     };
 }
 
@@ -3820,9 +3820,9 @@ macro_rules! vcheck_w_vs_loop_u {
     };
 }
 
-macro_rules! comply_w_vs_loop_u {
+macro_rules! handle_w_vs_loop_u {
     ($inst:expr, $machine:expr, $body:expr) => {
-        comply_w_vs_loop!($inst, $machine, $body, 0);
+        handle_w_vs_loop!($inst, $machine, $body, 0);
     };
 }
 
@@ -3847,7 +3847,7 @@ macro_rules! vcheck_v_vv_loop_ext_s {
     };
 }
 
-macro_rules! comply_v_vv_loop_ext_s {
+macro_rules! handle_v_vv_loop_ext_s {
     ($inst:expr, $machine:expr, $size:expr) => {
         let sew = $machine.vsew();
         let i = VVtype($inst);
@@ -3887,7 +3887,7 @@ macro_rules! vcheck_v_vv_loop_ext_u {
     };
 }
 
-macro_rules! comply_v_vv_loop_ext_u {
+macro_rules! handle_v_vv_loop_ext_u {
     ($inst:expr, $machine:expr, $size:expr) => {
         let sew = $machine.vsew();
         let i = VVtype($inst);
@@ -3908,7 +3908,7 @@ macro_rules! vcheck_x_m_loop {
     };
 }
 
-macro_rules! comply_x_m_loop {
+macro_rules! handle_x_m_loop {
     ($inst:expr, $machine:expr, $body:expr) => {
         let i = VVtype($inst);
         let vs2 = E2048::get($machine.element_ref(i.vs2(), VLEN as u64, 0));
@@ -3932,7 +3932,7 @@ macro_rules! vcheck_m_m_loop {
     };
 }
 
-macro_rules! comply_m_m_loop {
+macro_rules! handle_m_m_loop {
     ($inst:expr, $machine:expr, $body:expr) => {
         let i = VVtype($inst);
         let vs2 = E2048::get($machine.element_ref(i.vs2(), VLEN as u64, 0));
@@ -3956,7 +3956,7 @@ macro_rules! vcheck_vmv_r {
     };
 }
 
-macro_rules! comply_vmv_r {
+macro_rules! handle_vmv_r {
     ($inst:expr, $machine:expr, $size:expr) => {
         let i = VItype($inst);
         let data = $machine
@@ -3978,79 +3978,79 @@ pub(crate) use require_vill;
 pub(crate) use require_vm;
 pub(crate) use require_vsew;
 
-pub(crate) use comply_ld;
-pub(crate) use comply_ld_index;
-pub(crate) use comply_ld_whole;
-pub(crate) use comply_m_m_loop;
-pub(crate) use comply_m_mm_loop;
-pub(crate) use comply_m_vi_loop;
-pub(crate) use comply_m_vi_loop_s;
-pub(crate) use comply_m_vim_loop;
-pub(crate) use comply_m_vim_loop_s;
-pub(crate) use comply_m_vv_loop;
-pub(crate) use comply_m_vv_loop_s;
-pub(crate) use comply_m_vvm_loop;
-pub(crate) use comply_m_vvm_loop_s;
-pub(crate) use comply_m_vx_loop;
-pub(crate) use comply_m_vx_loop_s;
-pub(crate) use comply_m_vxm_loop;
-pub(crate) use comply_m_vxm_loop_s;
-pub(crate) use comply_sd;
-pub(crate) use comply_sd_index;
-pub(crate) use comply_sd_whole;
-pub(crate) use comply_v_vi_loop;
-pub(crate) use comply_v_vi_loop_s;
-pub(crate) use comply_v_vi_loop_u;
-pub(crate) use comply_v_vim_loop;
-pub(crate) use comply_v_vim_loop_s;
-pub(crate) use comply_v_vs_loop;
-pub(crate) use comply_v_vs_loop_s;
-pub(crate) use comply_v_vv_loop;
-pub(crate) use comply_v_vv_loop_destructive;
-pub(crate) use comply_v_vv_loop_destructive_s;
-pub(crate) use comply_v_vv_loop_ext_s;
-pub(crate) use comply_v_vv_loop_ext_u;
-pub(crate) use comply_v_vv_loop_s;
-pub(crate) use comply_v_vv_loop_u;
-pub(crate) use comply_v_vvm_loop;
-pub(crate) use comply_v_vvm_loop_s;
-pub(crate) use comply_v_vx_loop;
-pub(crate) use comply_v_vx_loop_destructive;
-pub(crate) use comply_v_vx_loop_destructive_s;
-pub(crate) use comply_v_vx_loop_s;
-pub(crate) use comply_v_vx_loop_u;
-pub(crate) use comply_v_vxm_loop;
-pub(crate) use comply_v_vxm_loop_s;
-pub(crate) use comply_v_wi_loop;
-pub(crate) use comply_v_wi_loop_u;
-pub(crate) use comply_v_wv_loop;
-pub(crate) use comply_v_wv_loop_u;
-pub(crate) use comply_v_wx_loop;
-pub(crate) use comply_v_wx_loop_u;
-pub(crate) use comply_vle;
-pub(crate) use comply_vmv_r;
-pub(crate) use comply_vse;
-pub(crate) use comply_w_vs_loop;
-pub(crate) use comply_w_vs_loop_s;
-pub(crate) use comply_w_vs_loop_u;
-pub(crate) use comply_w_vv_loop;
-pub(crate) use comply_w_vv_loop_destructive;
-pub(crate) use comply_w_vv_loop_destructive_s;
-pub(crate) use comply_w_vv_loop_s;
-pub(crate) use comply_w_vv_loop_u;
-pub(crate) use comply_w_vx_loop;
-pub(crate) use comply_w_vx_loop_destructive;
-pub(crate) use comply_w_vx_loop_destructive_s;
-pub(crate) use comply_w_vx_loop_destructive_u;
-pub(crate) use comply_w_vx_loop_s;
-pub(crate) use comply_w_vx_loop_u;
-pub(crate) use comply_w_wv_loop;
-pub(crate) use comply_w_wv_loop_s;
-pub(crate) use comply_w_wv_loop_u;
-pub(crate) use comply_w_wx_loop;
-pub(crate) use comply_w_wx_loop_s;
-pub(crate) use comply_w_wx_loop_u;
-pub(crate) use comply_x_m_loop;
+pub(crate) use handle_ld;
+pub(crate) use handle_ld_index;
+pub(crate) use handle_ld_whole;
+pub(crate) use handle_m_m_loop;
+pub(crate) use handle_m_mm_loop;
+pub(crate) use handle_m_vi_loop;
+pub(crate) use handle_m_vi_loop_s;
+pub(crate) use handle_m_vim_loop;
+pub(crate) use handle_m_vim_loop_s;
+pub(crate) use handle_m_vv_loop;
+pub(crate) use handle_m_vv_loop_s;
+pub(crate) use handle_m_vvm_loop;
+pub(crate) use handle_m_vvm_loop_s;
+pub(crate) use handle_m_vx_loop;
+pub(crate) use handle_m_vx_loop_s;
+pub(crate) use handle_m_vxm_loop;
+pub(crate) use handle_m_vxm_loop_s;
+pub(crate) use handle_sd;
+pub(crate) use handle_sd_index;
+pub(crate) use handle_sd_whole;
+pub(crate) use handle_v_vi_loop;
+pub(crate) use handle_v_vi_loop_s;
+pub(crate) use handle_v_vi_loop_u;
+pub(crate) use handle_v_vim_loop;
+pub(crate) use handle_v_vim_loop_s;
+pub(crate) use handle_v_vs_loop;
+pub(crate) use handle_v_vs_loop_s;
+pub(crate) use handle_v_vv_loop;
+pub(crate) use handle_v_vv_loop_destructive;
+pub(crate) use handle_v_vv_loop_destructive_s;
+pub(crate) use handle_v_vv_loop_ext_s;
+pub(crate) use handle_v_vv_loop_ext_u;
+pub(crate) use handle_v_vv_loop_s;
+pub(crate) use handle_v_vv_loop_u;
+pub(crate) use handle_v_vvm_loop;
+pub(crate) use handle_v_vvm_loop_s;
+pub(crate) use handle_v_vx_loop;
+pub(crate) use handle_v_vx_loop_destructive;
+pub(crate) use handle_v_vx_loop_destructive_s;
+pub(crate) use handle_v_vx_loop_s;
+pub(crate) use handle_v_vx_loop_u;
+pub(crate) use handle_v_vxm_loop;
+pub(crate) use handle_v_vxm_loop_s;
+pub(crate) use handle_v_wi_loop;
+pub(crate) use handle_v_wi_loop_u;
+pub(crate) use handle_v_wv_loop;
+pub(crate) use handle_v_wv_loop_u;
+pub(crate) use handle_v_wx_loop;
+pub(crate) use handle_v_wx_loop_u;
+pub(crate) use handle_vle;
+pub(crate) use handle_vmv_r;
+pub(crate) use handle_vse;
+pub(crate) use handle_w_vs_loop;
+pub(crate) use handle_w_vs_loop_s;
+pub(crate) use handle_w_vs_loop_u;
+pub(crate) use handle_w_vv_loop;
+pub(crate) use handle_w_vv_loop_destructive;
+pub(crate) use handle_w_vv_loop_destructive_s;
+pub(crate) use handle_w_vv_loop_s;
+pub(crate) use handle_w_vv_loop_u;
+pub(crate) use handle_w_vx_loop;
+pub(crate) use handle_w_vx_loop_destructive;
+pub(crate) use handle_w_vx_loop_destructive_s;
+pub(crate) use handle_w_vx_loop_destructive_u;
+pub(crate) use handle_w_vx_loop_s;
+pub(crate) use handle_w_vx_loop_u;
+pub(crate) use handle_w_wv_loop;
+pub(crate) use handle_w_wv_loop_s;
+pub(crate) use handle_w_wv_loop_u;
+pub(crate) use handle_w_wx_loop;
+pub(crate) use handle_w_wx_loop_s;
+pub(crate) use handle_w_wx_loop_u;
+pub(crate) use handle_x_m_loop;
 pub(crate) use vcheck_ld;
 pub(crate) use vcheck_ld_index;
 pub(crate) use vcheck_ld_whole;

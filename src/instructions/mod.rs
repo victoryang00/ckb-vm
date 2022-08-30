@@ -27,7 +27,7 @@ pub use ckb_vm_definitions::{
 };
 use core::fmt;
 pub use execute::{
-    execute, execute_instruction, generate_comply_function_list, generate_handle_function_list,
+    execute, execute_instruction, execute_nocheck, generate_handle_function_list,
     generate_vcheck_function_list, HandleFunction,
 };
 

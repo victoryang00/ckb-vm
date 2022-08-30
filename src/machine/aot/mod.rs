@@ -12,8 +12,9 @@ use scroll::Pread;
 use crate::{
     decoder::build_decoder,
     instructions::{
-        ast::Value, execute, generate_handle_function_list, instruction_length,
-        is_basic_block_end_instruction, is_slowpath_instruction, HandleFunction, Instruction,
+        ast::Value, execute, generate_handle_function_list, generate_vcheck_function_list,
+        instruction_length, is_basic_block_end_instruction, is_slowpath_instruction,
+        HandleFunction, Instruction,
     },
     machine::{asm::AotCode, elf_adaptor, SupportMachine, VERSION1},
     CoreMachine, DefaultCoreMachine, Error, FlatMemory, InstructionCycleFunc, Machine, Memory,
@@ -199,6 +200,7 @@ impl LabelGatheringMachine {
 
     pub fn gather(&mut self) -> Result<(), Error> {
         let mut decoder = build_decoder::<u64>(self.isa(), self.version());
+        let vcheck_function_list = generate_vcheck_function_list::<Self>();
         let handle_function_list = generate_handle_function_list::<Self>();
         for i in 0..self.sections.len() {
             let (section_start, section_end) = self.sections[i];
@@ -216,7 +218,12 @@ impl LabelGatheringMachine {
                         let next_pc = pc + u64::from(instruction_length(instruction));
                         self.update_pc(Value::from_u64(next_pc));
                         if !is_slowpath_instruction(instruction) {
-                            execute(self, &handle_function_list, instruction)?;
+                            execute(
+                                self,
+                                &vcheck_function_list,
+                                &handle_function_list,
+                                instruction,
+                            )?;
                         }
                         for label in self.labels_to_test.drain(..) {
                             if label != next_pc && label < section_end && label >= section_start {
@@ -551,6 +558,7 @@ impl AotCompilingMachine {
     fn emit_block(
         &mut self,
         instructions: &[Instruction],
+        vcheck_function_list: &[HandleFunction<Self>],
         handle_function_list: &[HandleFunction<Self>],
     ) -> Result<(), Error> {
         let mut cycles = 0;
@@ -586,7 +594,12 @@ impl AotCompilingMachine {
             if is_slowpath_instruction(*instruction) {
                 self.writes.push(Write::Slowpath);
             } else {
-                execute(self, &handle_function_list, *instruction)?;
+                execute(
+                    self,
+                    &vcheck_function_list,
+                    &handle_function_list,
+                    *instruction,
+                )?;
             }
             self.pc = Value::from_u64(pc + u64::from(length));
         }
@@ -623,6 +636,7 @@ impl AotCompilingMachine {
 
     pub fn compile(&mut self) -> Result<AotCode, Error> {
         let mut decoder = build_decoder::<u64>(self.isa(), self.version());
+        let vcheck_function_list = generate_vcheck_function_list::<Self>();
         let handle_function_list = generate_handle_function_list::<Self>();
         let mut instructions = [Instruction::default(); MAXIMUM_INSTRUCTIONS_PER_BLOCK];
         for i in 0..self.sections.len() {
@@ -654,7 +668,11 @@ impl AotCompilingMachine {
                         break;
                     }
                 }
-                self.emit_block(&instructions[0..count], &handle_function_list)?;
+                self.emit_block(
+                    &instructions[0..count],
+                    &vcheck_function_list,
+                    &handle_function_list,
+                )?;
             }
         }
         let encoded_size = self.emitter.link()?;

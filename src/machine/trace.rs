@@ -1,7 +1,7 @@
 use crate::decoder::build_decoder;
 use crate::instructions::{
-    execute, generate_handle_function_list, instruction_length, is_basic_block_end_instruction,
-    Instruction, Register,
+    execute, generate_handle_function_list, generate_vcheck_function_list, instruction_length,
+    is_basic_block_end_instruction, Instruction, Register,
 };
 use crate::machine::{CoreMachine, DefaultMachine, Machine, SupportMachine};
 use crate::Error;
@@ -156,6 +156,7 @@ impl<Inner: SupportMachine> TraceMachine<Inner> {
 
     pub fn run(&mut self) -> Result<i8, Error> {
         let mut decoder = build_decoder::<Inner::REG>(self.isa(), self.version());
+        let vcheck_func_list = generate_vcheck_function_list::<Self>();
         let handle_func_list = generate_handle_function_list::<Self>();
         self.machine.set_running(true);
         // For current trace size this is acceptable, however we might want
@@ -195,7 +196,7 @@ impl<Inner: SupportMachine> TraceMachine<Inner> {
                 let sew = self.vsew();
                 let cycles = self.machine.instruction_cycle_func()(i, vl, sew);
                 self.machine.add_cycles(cycles)?;
-                execute(self, &handle_func_list, i)?;
+                execute(self, &vcheck_func_list, &handle_func_list, i)?;
             }
         }
         Ok(self.machine.exit_code())

@@ -14,7 +14,8 @@ use scroll::Pread;
 use crate::debugger::Debugger;
 use crate::decoder::{build_decoder, Decoder};
 use crate::instructions::{
-    execute, generate_handle_function_list, HandleFunction, Instruction, Register, RegisterFile,
+    execute, generate_handle_function_list, generate_vcheck_function_list, HandleFunction,
+    Instruction, Register, RegisterFile,
 };
 use crate::memory::{round_page_down, round_page_up, Memory};
 use crate::syscalls::Syscalls;
@@ -789,13 +790,14 @@ impl<Inner: SupportMachine> DefaultMachine<Inner> {
             return Err(Error::InvalidVersion);
         }
         let mut decoder = build_decoder::<Inner::REG>(self.isa(), self.version());
+        let vcheck_function_list = generate_vcheck_function_list::<Self>();
         let handle_function_list = generate_handle_function_list::<Self>();
         self.set_running(true);
         while self.running() {
             if self.reset_signal() {
                 decoder.reset_instructions_cache();
             }
-            self.step(&mut decoder, &handle_function_list)?;
+            self.step(&mut decoder, &vcheck_function_list, &handle_function_list)?;
         }
         Ok(self.exit_code())
     }
@@ -803,6 +805,7 @@ impl<Inner: SupportMachine> DefaultMachine<Inner> {
     pub fn step(
         &mut self,
         decoder: &mut Decoder,
+        vcheck_function_list: &[HandleFunction<Self>],
         handle_function_list: &[HandleFunction<Self>],
     ) -> Result<(), Error> {
         let instruction = {
@@ -814,7 +817,12 @@ impl<Inner: SupportMachine> DefaultMachine<Inner> {
         let sew = self.inner.vsew();
         let cycles = self.instruction_cycle_func()(instruction, vl, sew);
         self.add_cycles(cycles)?;
-        execute(self, &handle_function_list, instruction)
+        execute(
+            self,
+            &vcheck_function_list,
+            &handle_function_list,
+            instruction,
+        )
     }
 }
 

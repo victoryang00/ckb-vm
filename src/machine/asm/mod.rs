@@ -1,10 +1,11 @@
 use crate::{
     decoder::{build_decoder, Decoder},
     instructions::{
-        blank_instruction, execute_instruction, extract_opcode, generate_comply_function_list,
-        instruction_length, is_basic_block_end_instruction, is_slowpath_instruction,
+        blank_instruction, execute, execute_instruction, execute_nocheck, extract_opcode,
+        generate_handle_function_list, generate_vcheck_function_list, instruction_length,
+        is_basic_block_end_instruction, is_slowpath_instruction,
     },
-    machine::{execute, generate_handle_function_list, VERSION0},
+    machine::VERSION0,
     memory::{
         fill_page_data, get_page_indices, memset, round_page_down, round_page_up, FLAG_DIRTY,
         FLAG_EXECUTABLE, FLAG_FREEZED, FLAG_WRITABLE, FLAG_WXORX_BIT,
@@ -576,8 +577,8 @@ impl AsmMachine {
             return Err(Error::InvalidVersion);
         }
         let mut decoder = build_decoder::<u64>(self.machine.isa(), self.machine.version());
-        let comply_function_list =
-            generate_comply_function_list::<DefaultMachine<Box<AsmCoreMachine>>>();
+        let vcheck_function_list =
+            generate_vcheck_function_list::<DefaultMachine<Box<AsmCoreMachine>>>();
         let handle_function_list =
             generate_handle_function_list::<DefaultMachine<Box<AsmCoreMachine>>>();
         self.machine.set_running(true);
@@ -663,7 +664,9 @@ impl AsmMachine {
                         self.machine.vsew(),
                     );
                     self.machine.add_cycles(cycles)?;
-                    execute_instruction(&mut self.machine, &handle_function_list, instruction)?;
+                    let op = extract_opcode(instruction);
+                    vcheck_function_list[op as usize](&mut self.machine, instruction)?;
+                    handle_function_list[op as usize](&mut self.machine, instruction)?;
                     probe!(default, slow_path, cycles as isize);
                 }
                 RET_SLOWPATH_TRACE => {
@@ -678,7 +681,7 @@ impl AsmMachine {
                             if instruction == blank_instruction(OP_CUSTOM_TRACE_END) {
                                 break;
                             }
-                            execute(&mut self.machine, &comply_function_list, instruction)?;
+                            execute_nocheck(&mut self.machine, &handle_function_list, instruction)?;
                         }
                     } else {
                         let start_instruction =
@@ -699,7 +702,12 @@ impl AsmMachine {
                                     self.machine.add_cycles(comming_cycles)?;
                                     cycles += comming_cycles;
                                 }
-                                execute(&mut self.machine, &handle_function_list, instruction)?;
+                                execute(
+                                    &mut self.machine,
+                                    &vcheck_function_list,
+                                    &handle_function_list,
+                                    instruction,
+                                )?;
                             }
                             self.machine.inner_mut().traces[slot].slowpath = 0b11;
                             self.machine.inner_mut().traces[slot].cycles = cycles;
@@ -718,7 +726,12 @@ impl AsmMachine {
                                     );
                                     self.machine.add_cycles(cycles)?;
                                 }
-                                execute(&mut self.machine, &handle_function_list, instruction)?;
+                                execute(
+                                    &mut self.machine,
+                                    &vcheck_function_list,
+                                    &handle_function_list,
+                                    instruction,
+                                )?;
                             }
                         }
                     }
@@ -731,6 +744,8 @@ impl AsmMachine {
     }
 
     pub fn step(&mut self, decoder: &mut Decoder) -> Result<(), Error> {
+        let vcheck_function_list =
+            generate_vcheck_function_list::<DefaultMachine<Box<AsmCoreMachine>>>();
         let handle_function_list =
             generate_handle_function_list::<DefaultMachine<Box<AsmCoreMachine>>>();
         // Decode only one instruction into a trace
@@ -768,7 +783,12 @@ impl AsmMachine {
             RET_SLOWPATH => {
                 let pc = *self.machine.pc() - 4;
                 let instruction = decoder.decode(self.machine.memory_mut(), pc)?;
-                execute_instruction(&mut self.machine, &handle_function_list, instruction)?;
+                execute_instruction(
+                    &mut self.machine,
+                    &vcheck_function_list,
+                    &handle_function_list,
+                    instruction,
+                )?;
             }
             RET_SLOWPATH_TRACE => {
                 let pc = *self.machine.pc();
@@ -779,7 +799,12 @@ impl AsmMachine {
                     if instruction == blank_instruction(OP_CUSTOM_TRACE_END) {
                         break;
                     }
-                    execute(&mut self.machine, &handle_function_list, instruction)?;
+                    execute(
+                        &mut self.machine,
+                        &vcheck_function_list,
+                        &handle_function_list,
+                        instruction,
+                    )?;
                 }
             }
             _ => return Err(Error::Asm(result)),
