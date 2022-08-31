@@ -3,7 +3,7 @@ use crate::{
     instructions::{
         blank_instruction, execute, execute_instruction, execute_nocheck, extract_opcode,
         generate_handle_function_list, generate_vcheck_function_list, instruction_length,
-        is_basic_block_end_instruction, is_slowpath_instruction,
+        is_basic_block_end_instruction, is_slowpath_instruction, Instruction,
     },
     machine::VERSION0,
     memory::{
@@ -22,7 +22,7 @@ use ckb_vm_definitions::{
         RET_ECALL, RET_INVALID_PERMISSION, RET_MAX_CYCLES_EXCEEDED, RET_OUT_OF_BOUND, RET_SLOWPATH,
         RET_SLOWPATH_TRACE, TRACE_ITEM_LENGTH, TRACE_SIZE,
     },
-    instructions::{OP_CUSTOM_TRACE_END, OP_VSETIVLI, OP_VSETVLI},
+    instructions::{OP_CUSTOM_TRACE_END, OP_VSETIVLI, OP_VSETVL, OP_VSETVLI},
     ELEN, ISA_MOP, MEMORY_FRAMES, MEMORY_FRAME_PAGE_SHIFTS, RISCV_GENERAL_REGISTER_NUMBER,
     RISCV_PAGE_SHIFTS, VLEN,
 };
@@ -527,6 +527,35 @@ impl SupportMachine for Box<AsmCoreMachine> {
     }
 }
 
+enum VTraceType {
+    StableCheckAndCycles,
+    StableCheck,
+    Unstable,
+}
+
+fn vtrace_type(instructions: &[Instruction]) -> VTraceType {
+    let mut vset_count = 0;
+    for instruction in instructions {
+        let op = extract_opcode(*instruction);
+        if op == OP_CUSTOM_TRACE_END {
+            break;
+        }
+        if op == OP_VSETIVLI || op == OP_VSETIVLI || op == OP_VSETVL {
+            vset_count += 1;
+        }
+    }
+    if vset_count != 1 {
+        return VTraceType::Unstable;
+    }
+    if extract_opcode(instructions[0]) == OP_VSETVLI {
+        return VTraceType::StableCheck;
+    }
+    if extract_opcode(instructions[0]) == OP_VSETIVLI {
+        return VTraceType::StableCheckAndCycles;
+    }
+    return VTraceType::Unstable;
+}
+
 pub struct AotCode {
     pub code: Mmap,
     /// Labels that map RISC-V addresses to offsets into the compiled x86_64
@@ -673,45 +702,23 @@ impl AsmMachine {
                     let pc = *self.machine.pc();
                     let slot = calculate_slot(pc);
                     let slowpath = self.machine.inner_mut().traces[slot].slowpath;
-                    let slowpath_stable = slowpath & 0b10 != 0;
-                    if slowpath_stable {
-                        let cycles = self.machine.inner_mut().traces[slot].cycles;
-                        self.machine.add_cycles(cycles)?;
-                        for instruction in self.machine.inner_mut().traces[slot].instructions {
-                            if instruction == blank_instruction(OP_CUSTOM_TRACE_END) {
-                                break;
-                            }
-                            execute_nocheck(&mut self.machine, &handle_function_list, instruction)?;
-                        }
-                    } else {
-                        let start_instruction =
-                            self.machine.inner_mut().traces[slot].instructions[0];
-                        let start_opcode = extract_opcode(start_instruction);
-                        if start_opcode == OP_VSETVLI || start_opcode == OP_VSETIVLI {
-                            let mut cycles = self.machine.inner_mut().traces[slot].cycles;
+                    match slowpath {
+                        0b101 => {
+                            let cycles = self.machine.inner_mut().traces[slot].cycles;
+                            self.machine.add_cycles(cycles)?;
                             for instruction in self.machine.inner_mut().traces[slot].instructions {
                                 if instruction == blank_instruction(OP_CUSTOM_TRACE_END) {
                                     break;
                                 }
-                                if is_slowpath_instruction(instruction) {
-                                    let comming_cycles = self.machine.instruction_cycle_func()(
-                                        instruction,
-                                        self.machine.vl(),
-                                        self.machine.vsew(),
-                                    );
-                                    self.machine.add_cycles(comming_cycles)?;
-                                    cycles += comming_cycles;
-                                }
-                                execute(
+                                execute_nocheck(
                                     &mut self.machine,
-                                    &vcheck_function_list,
                                     &handle_function_list,
                                     instruction,
                                 )?;
                             }
-                            self.machine.inner_mut().traces[slot].slowpath = 0b11;
-                            self.machine.inner_mut().traces[slot].cycles = cycles;
-                        } else {
+                            probe!(default, slow_path_trace, 1);
+                        }
+                        0b011 => {
                             let cycles = self.machine.inner_mut().traces[slot].cycles;
                             self.machine.add_cycles(cycles)?;
                             for instruction in self.machine.inner_mut().traces[slot].instructions {
@@ -726,16 +733,100 @@ impl AsmMachine {
                                     );
                                     self.machine.add_cycles(cycles)?;
                                 }
-                                execute(
+                                execute_nocheck(
                                     &mut self.machine,
-                                    &vcheck_function_list,
                                     &handle_function_list,
                                     instruction,
                                 )?;
                             }
+                            probe!(default, slow_path_trace, 1);
+                        }
+                        _ => {
+                            match vtrace_type(&self.machine.inner_mut().traces[slot].instructions) {
+                                VTraceType::StableCheckAndCycles => {
+                                    let mut cycles = self.machine.inner_mut().traces[slot].cycles;
+                                    self.machine.add_cycles(cycles)?;
+                                    for instruction in
+                                        self.machine.inner_mut().traces[slot].instructions
+                                    {
+                                        if instruction == blank_instruction(OP_CUSTOM_TRACE_END) {
+                                            break;
+                                        }
+                                        if is_slowpath_instruction(instruction) {
+                                            let comming_cycles =
+                                                self.machine.instruction_cycle_func()(
+                                                    instruction,
+                                                    self.machine.vl(),
+                                                    self.machine.vsew(),
+                                                );
+                                            self.machine.add_cycles(comming_cycles)?;
+                                            cycles += comming_cycles;
+                                        }
+                                        execute(
+                                            &mut self.machine,
+                                            &vcheck_function_list,
+                                            &handle_function_list,
+                                            instruction,
+                                        )?;
+                                    }
+                                    self.machine.inner_mut().traces[slot].slowpath = 0b101;
+                                    self.machine.inner_mut().traces[slot].cycles = cycles;
+                                }
+                                VTraceType::StableCheck => {
+                                    let cycles = self.machine.inner_mut().traces[slot].cycles;
+                                    self.machine.add_cycles(cycles)?;
+                                    for instruction in
+                                        self.machine.inner_mut().traces[slot].instructions
+                                    {
+                                        if instruction == blank_instruction(OP_CUSTOM_TRACE_END) {
+                                            break;
+                                        }
+                                        if is_slowpath_instruction(instruction) {
+                                            let cycles = self.machine.instruction_cycle_func()(
+                                                instruction,
+                                                self.machine.vl(),
+                                                self.machine.vsew(),
+                                            );
+                                            self.machine.add_cycles(cycles)?;
+                                        }
+                                        execute(
+                                            &mut self.machine,
+                                            &vcheck_function_list,
+                                            &handle_function_list,
+                                            instruction,
+                                        )?;
+                                    }
+                                    self.machine.inner_mut().traces[slot].slowpath = 0b011;
+                                }
+                                VTraceType::Unstable => {
+                                    let cycles = self.machine.inner_mut().traces[slot].cycles;
+                                    self.machine.add_cycles(cycles)?;
+                                    for instruction in
+                                        self.machine.inner_mut().traces[slot].instructions
+                                    {
+                                        if instruction == blank_instruction(OP_CUSTOM_TRACE_END) {
+                                            break;
+                                        }
+                                        if is_slowpath_instruction(instruction) {
+                                            let cycles = self.machine.instruction_cycle_func()(
+                                                instruction,
+                                                self.machine.vl(),
+                                                self.machine.vsew(),
+                                            );
+                                            self.machine.add_cycles(cycles)?;
+                                        }
+                                        execute(
+                                            &mut self.machine,
+                                            &vcheck_function_list,
+                                            &handle_function_list,
+                                            instruction,
+                                        )?;
+                                    }
+                                }
+                            }
+                            probe!(default, slow_path_trace, 1);
                         }
                     }
-                    probe!(default, slow_path_trace, 1);
                 }
                 _ => return Err(Error::Asm(result)),
             }
