@@ -83,12 +83,12 @@ fn main_aot(code: Bytes, args: Vec<Bytes>) -> Result<(), Box<dyn std::error::Err
         ckb_vm::machine::VERSION1,
         u64::MAX,
     );
-    let core =
-        ckb_vm::DefaultMachineBuilder::<Box<ckb_vm::machine::asm::AsmCoreMachine>>::new(asm_core)
-            .instruction_cycle_func(Box::new(instruction_cycles))
-            .syscall(Box::new(DebugSyscall {}))
-            .syscall(Box::new(TimeSyscall {}))
-            .build();
+    let asm_glue = ckb_vm::machine::asm::AsmGlueMachine::new(asm_core);
+    let core = ckb_vm::DefaultMachineBuilder::new(asm_glue)
+        .instruction_cycle_func(Box::new(instruction_cycles))
+        .syscall(Box::new(DebugSyscall {}))
+        .syscall(Box::new(TimeSyscall {}))
+        .build();
     let mut machine =
         ckb_vm::machine::asm::AsmMachine::new(core, Some(std::sync::Arc::new(aot_code)));
     machine.load_program(&code, &args)?;
@@ -112,10 +112,11 @@ fn main_asm(code: Bytes, args: Vec<Bytes>) -> Result<(), Box<dyn std::error::Err
         ckb_vm::machine::VERSION1,
         u64::MAX,
     );
-    let ptr = (&asm_core.pc) as *const u64;
+    let asm_glue = ckb_vm::machine::asm::AsmGlueMachine::new(asm_core);
+    let ptr = (&asm_glue.imc.pc) as *const u64;
     probe!(default, machine_pc_location, ptr as isize);
 
-    let core = ckb_vm::DefaultMachineBuilder::new(asm_core)
+    let core = ckb_vm::DefaultMachineBuilder::new(asm_glue)
         .instruction_cycle_func(Box::new(instruction_cycles))
         .syscall(Box::new(DebugSyscall {}))
         .syscall(Box::new(TimeSyscall {}))

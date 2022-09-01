@@ -26,7 +26,11 @@ pub fn set_vl<Mac: Machine>(
     avl: u64,
     new_type: u64,
 ) -> Result<(), Error> {
-    machine.set_vl(rd, rs1, avl, new_type);
-    update_register(machine, rd, Mac::REG::from_u64(machine.vl()));
+    machine.coprocessor_v_mut().set_vl(rd, rs1, avl, new_type);
+    update_register(
+        machine,
+        rd,
+        Mac::REG::from_u64(machine.coprocessor_v().vl()),
+    );
     Ok(())
 }

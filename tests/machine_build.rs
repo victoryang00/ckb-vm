@@ -1,5 +1,5 @@
 #[cfg(has_asm)]
-use ckb_vm::machine::asm::{AsmCoreMachine, AsmMachine};
+use ckb_vm::machine::asm::{AsmCoreMachine, AsmGlueMachine, AsmMachine};
 #[cfg(has_aot)]
 use ckb_vm::machine::{aot::AotCompilingMachine, asm::AotCode};
 
@@ -16,7 +16,8 @@ pub fn instruction_cycle_func(_: Instruction, _: u64, _: u64) -> u64 {
 pub fn asm_v1_imcb(path: &str) -> AsmMachine {
     let buffer: Bytes = std::fs::read(path).unwrap().into();
     let asm_core = AsmCoreMachine::new(ISA_IMC | ISA_B, VERSION1, u64::max_value());
-    let core = DefaultMachineBuilder::<Box<AsmCoreMachine>>::new(asm_core)
+    let asm_glue = AsmGlueMachine::new(asm_core);
+    let core = DefaultMachineBuilder::new(asm_glue)
         .instruction_cycle_func(Box::new(instruction_cycle_func))
         .build();
     let mut machine = AsmMachine::new(core, None);
@@ -39,7 +40,8 @@ pub fn aot_v1_imcb(path: &str, code: AotCode) -> AsmMachine {
     let buffer: Bytes = std::fs::read(path).unwrap().into();
 
     let asm_core = AsmCoreMachine::new(ISA_IMC | ISA_B, VERSION1, u64::max_value());
-    let core = DefaultMachineBuilder::<Box<AsmCoreMachine>>::new(asm_core)
+    let asm_glue = AsmGlueMachine::new(asm_core);
+    let core = DefaultMachineBuilder::new(asm_glue)
         .instruction_cycle_func(Box::new(instruction_cycle_func))
         .build();
     let mut machine = AsmMachine::new(core, Some(std::sync::Arc::new(code)));
@@ -73,7 +75,8 @@ pub fn int_v1_imcb(
 pub fn asm_v1_mop(path: &str, args: Vec<Bytes>) -> AsmMachine {
     let buffer: Bytes = std::fs::read(path).unwrap().into();
     let asm_core = AsmCoreMachine::new(ISA_IMC | ISA_B | ISA_MOP, VERSION1, u64::max_value());
-    let core = DefaultMachineBuilder::<Box<AsmCoreMachine>>::new(asm_core)
+    let asm_glue = AsmGlueMachine::new(asm_core);
+    let core = DefaultMachineBuilder::new(asm_glue)
         .instruction_cycle_func(Box::new(instruction_cycle_func))
         .build();
     let mut machine = AsmMachine::new(core, None);
@@ -96,7 +99,8 @@ pub fn aot_v1_mop(path: &str, args: Vec<Bytes>, code: AotCode) -> AsmMachine {
     let buffer: Bytes = std::fs::read(path).unwrap().into();
 
     let asm_core = AsmCoreMachine::new(ISA_IMC | ISA_B | ISA_MOP, VERSION1, u64::max_value());
-    let core = DefaultMachineBuilder::<Box<AsmCoreMachine>>::new(asm_core)
+    let asm_glue = AsmGlueMachine::new(asm_core);
+    let core = DefaultMachineBuilder::new(asm_glue)
         .instruction_cycle_func(Box::new(instruction_cycle_func))
         .build();
     let mut argv = vec![Bytes::from("main")];
@@ -131,7 +135,8 @@ pub fn int_v1_mop(
 pub fn asm_v1_imcv(path: &str) -> AsmMachine {
     let buffer: Bytes = std::fs::read(path).unwrap().into();
     let asm_core = AsmCoreMachine::new(ISA_IMC | ISA_V, VERSION1, u64::max_value());
-    let core = DefaultMachineBuilder::<Box<AsmCoreMachine>>::new(asm_core)
+    let asm_glue = AsmGlueMachine::new(asm_core);
+    let core = DefaultMachineBuilder::new(asm_glue)
         .instruction_cycle_func(Box::new(instruction_cycle_func))
         .build();
     let mut machine = AsmMachine::new(core, None);
@@ -154,7 +159,8 @@ pub fn aot_v1_imcv(path: &str, code: AotCode) -> AsmMachine {
     let buffer: Bytes = std::fs::read(path).unwrap().into();
 
     let asm_core = AsmCoreMachine::new(ISA_IMC | ISA_V, VERSION1, u64::max_value());
-    let core = DefaultMachineBuilder::<Box<AsmCoreMachine>>::new(asm_core)
+    let asm_glue = AsmGlueMachine::new(asm_core);
+    let core = DefaultMachineBuilder::new(asm_glue)
         .instruction_cycle_func(Box::new(instruction_cycle_func))
         .build();
     let mut machine = AsmMachine::new(core, Some(std::sync::Arc::new(code)));

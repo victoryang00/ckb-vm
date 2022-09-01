@@ -1240,342 +1240,370 @@ pub fn handle_vsetvl<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Resu
 }
 
 pub fn vcheck_vlm_v<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    vcheck_ld!(inst, machine, (machine.vl() + 7) / 8, 0, 1, 0);
+    vcheck_ld!(
+        inst,
+        machine,
+        (machine.coprocessor_v().vl() + 7) / 8,
+        0,
+        1,
+        0
+    );
     Ok(())
 }
 
 pub fn handle_vlm_v<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    handle_ld!(inst, machine, (machine.vl() + 7) / 8, 0, 1, 0);
+    handle_ld!(
+        inst,
+        machine,
+        (machine.coprocessor_v().vl() + 7) / 8,
+        0,
+        1,
+        0
+    );
     Ok(())
 }
 
 pub fn vcheck_vle8_v<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    vcheck_vle!(inst, machine, machine.vl(), 1);
+    vcheck_vle!(inst, machine, machine.coprocessor_v().vl(), 1);
     Ok(())
 }
 
 pub fn handle_vle8_v<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    handle_vle!(inst, machine, machine.vl(), 1);
+    handle_vle!(inst, machine, machine.coprocessor_v().vl(), 1);
     Ok(())
 }
 
 pub fn vcheck_vle16_v<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    vcheck_vle!(inst, machine, machine.vl(), 2);
+    vcheck_vle!(inst, machine, machine.coprocessor_v().vl(), 2);
     Ok(())
 }
 
 pub fn handle_vle16_v<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    handle_vle!(inst, machine, machine.vl(), 2);
+    handle_vle!(inst, machine, machine.coprocessor_v().vl(), 2);
     Ok(())
 }
 
 pub fn vcheck_vle32_v<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    vcheck_vle!(inst, machine, machine.vl(), 4);
+    vcheck_vle!(inst, machine, machine.coprocessor_v().vl(), 4);
     Ok(())
 }
 
 pub fn handle_vle32_v<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    handle_vle!(inst, machine, machine.vl(), 4);
+    handle_vle!(inst, machine, machine.coprocessor_v().vl(), 4);
     Ok(())
 }
 
 pub fn vcheck_vle64_v<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    vcheck_vle!(inst, machine, machine.vl(), 8);
+    vcheck_vle!(inst, machine, machine.coprocessor_v().vl(), 8);
     Ok(())
 }
 
 pub fn handle_vle64_v<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    handle_vle!(inst, machine, machine.vl(), 8);
+    handle_vle!(inst, machine, machine.coprocessor_v().vl(), 8);
     Ok(())
 }
 
 pub fn vcheck_vle128_v<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    vcheck_vle!(inst, machine, machine.vl(), 16);
+    vcheck_vle!(inst, machine, machine.coprocessor_v().vl(), 16);
     Ok(())
 }
 
 pub fn handle_vle128_v<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    handle_vle!(inst, machine, machine.vl(), 16);
+    handle_vle!(inst, machine, machine.coprocessor_v().vl(), 16);
     Ok(())
 }
 
 pub fn vcheck_vle256_v<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    vcheck_vle!(inst, machine, machine.vl(), 32);
+    vcheck_vle!(inst, machine, machine.coprocessor_v().vl(), 32);
     Ok(())
 }
 
 pub fn handle_vle256_v<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    handle_vle!(inst, machine, machine.vl(), 32);
+    handle_vle!(inst, machine, machine.coprocessor_v().vl(), 32);
     Ok(())
 }
 
 pub fn vcheck_vle512_v<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    vcheck_vle!(inst, machine, machine.vl(), 64);
+    vcheck_vle!(inst, machine, machine.coprocessor_v().vl(), 64);
     Ok(())
 }
 
 pub fn handle_vle512_v<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    handle_vle!(inst, machine, machine.vl(), 64);
+    handle_vle!(inst, machine, machine.coprocessor_v().vl(), 64);
     Ok(())
 }
 
 pub fn vcheck_vle1024_v<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    vcheck_vle!(inst, machine, machine.vl(), 128);
+    vcheck_vle!(inst, machine, machine.coprocessor_v().vl(), 128);
     Ok(())
 }
 
 pub fn handle_vle1024_v<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    handle_vle!(inst, machine, machine.vl(), 128);
+    handle_vle!(inst, machine, machine.coprocessor_v().vl(), 128);
     Ok(())
 }
 
 pub fn vcheck_vsm_v<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    vcheck_sd!(inst, machine, (machine.vl() + 7) / 8, 0, 1, 0);
+    vcheck_sd!(
+        inst,
+        machine,
+        (machine.coprocessor_v().vl() + 7) / 8,
+        0,
+        1,
+        0
+    );
     Ok(())
 }
 
 pub fn handle_vsm_v<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    handle_sd!(inst, machine, (machine.vl() + 7) / 8, 0, 1, 0);
+    handle_sd!(
+        inst,
+        machine,
+        (machine.coprocessor_v().vl() + 7) / 8,
+        0,
+        1,
+        0
+    );
     Ok(())
 }
 
 pub fn vcheck_vse8_v<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    vcheck_vse!(inst, machine, machine.vl(), 1);
+    vcheck_vse!(inst, machine, machine.coprocessor_v().vl(), 1);
     Ok(())
 }
 
 pub fn handle_vse8_v<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    handle_vse!(inst, machine, machine.vl(), 1);
+    handle_vse!(inst, machine, machine.coprocessor_v().vl(), 1);
     Ok(())
 }
 
 pub fn vcheck_vse16_v<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    vcheck_vse!(inst, machine, machine.vl(), 2);
+    vcheck_vse!(inst, machine, machine.coprocessor_v().vl(), 2);
     Ok(())
 }
 
 pub fn handle_vse16_v<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    handle_vse!(inst, machine, machine.vl(), 2);
+    handle_vse!(inst, machine, machine.coprocessor_v().vl(), 2);
     Ok(())
 }
 
 pub fn vcheck_vse32_v<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    vcheck_vse!(inst, machine, machine.vl(), 4);
+    vcheck_vse!(inst, machine, machine.coprocessor_v().vl(), 4);
     Ok(())
 }
 
 pub fn handle_vse32_v<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    handle_vse!(inst, machine, machine.vl(), 4);
+    handle_vse!(inst, machine, machine.coprocessor_v().vl(), 4);
     Ok(())
 }
 
 pub fn vcheck_vse64_v<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    vcheck_vse!(inst, machine, machine.vl(), 8);
+    vcheck_vse!(inst, machine, machine.coprocessor_v().vl(), 8);
     Ok(())
 }
 
 pub fn handle_vse64_v<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    handle_vse!(inst, machine, machine.vl(), 8);
+    handle_vse!(inst, machine, machine.coprocessor_v().vl(), 8);
     Ok(())
 }
 
 pub fn vcheck_vse128_v<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    vcheck_vse!(inst, machine, machine.vl(), 16);
+    vcheck_vse!(inst, machine, machine.coprocessor_v().vl(), 16);
     Ok(())
 }
 
 pub fn handle_vse128_v<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    handle_vse!(inst, machine, machine.vl(), 16);
+    handle_vse!(inst, machine, machine.coprocessor_v().vl(), 16);
     Ok(())
 }
 
 pub fn vcheck_vse256_v<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    vcheck_vse!(inst, machine, machine.vl(), 32);
+    vcheck_vse!(inst, machine, machine.coprocessor_v().vl(), 32);
     Ok(())
 }
 
 pub fn handle_vse256_v<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    handle_vse!(inst, machine, machine.vl(), 32);
+    handle_vse!(inst, machine, machine.coprocessor_v().vl(), 32);
     Ok(())
 }
 
 pub fn vcheck_vse512_v<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    vcheck_vse!(inst, machine, machine.vl(), 64);
+    vcheck_vse!(inst, machine, machine.coprocessor_v().vl(), 64);
     Ok(())
 }
 
 pub fn handle_vse512_v<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    handle_vse!(inst, machine, machine.vl(), 64);
+    handle_vse!(inst, machine, machine.coprocessor_v().vl(), 64);
     Ok(())
 }
 
 pub fn vcheck_vse1024_v<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    vcheck_vse!(inst, machine, machine.vl(), 128);
+    vcheck_vse!(inst, machine, machine.coprocessor_v().vl(), 128);
     Ok(())
 }
 
 pub fn handle_vse1024_v<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    handle_vse!(inst, machine, machine.vl(), 128);
+    handle_vse!(inst, machine, machine.coprocessor_v().vl(), 128);
     Ok(())
 }
 
 pub fn vcheck_vlse8_v<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    vcheck_ld!(inst, machine, machine.vl(), 1, 1, 1);
+    vcheck_ld!(inst, machine, machine.coprocessor_v().vl(), 1, 1, 1);
     Ok(())
 }
 
 pub fn handle_vlse8_v<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    handle_ld!(inst, machine, machine.vl(), 1, 1, 1);
+    handle_ld!(inst, machine, machine.coprocessor_v().vl(), 1, 1, 1);
     Ok(())
 }
 
 pub fn vcheck_vlse16_v<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    vcheck_ld!(inst, machine, machine.vl(), 1, 2, 1);
+    vcheck_ld!(inst, machine, machine.coprocessor_v().vl(), 1, 2, 1);
     Ok(())
 }
 
 pub fn handle_vlse16_v<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    handle_ld!(inst, machine, machine.vl(), 1, 2, 1);
+    handle_ld!(inst, machine, machine.coprocessor_v().vl(), 1, 2, 1);
     Ok(())
 }
 
 pub fn vcheck_vlse32_v<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    vcheck_ld!(inst, machine, machine.vl(), 1, 4, 1);
+    vcheck_ld!(inst, machine, machine.coprocessor_v().vl(), 1, 4, 1);
     Ok(())
 }
 
 pub fn handle_vlse32_v<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    handle_ld!(inst, machine, machine.vl(), 1, 4, 1);
+    handle_ld!(inst, machine, machine.coprocessor_v().vl(), 1, 4, 1);
     Ok(())
 }
 
 pub fn vcheck_vlse64_v<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    vcheck_ld!(inst, machine, machine.vl(), 1, 8, 1);
+    vcheck_ld!(inst, machine, machine.coprocessor_v().vl(), 1, 8, 1);
     Ok(())
 }
 
 pub fn handle_vlse64_v<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    handle_ld!(inst, machine, machine.vl(), 1, 8, 1);
+    handle_ld!(inst, machine, machine.coprocessor_v().vl(), 1, 8, 1);
     Ok(())
 }
 
 pub fn vcheck_vlse128_v<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    vcheck_ld!(inst, machine, machine.vl(), 1, 16, 1);
+    vcheck_ld!(inst, machine, machine.coprocessor_v().vl(), 1, 16, 1);
     Ok(())
 }
 
 pub fn handle_vlse128_v<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    handle_ld!(inst, machine, machine.vl(), 1, 16, 1);
+    handle_ld!(inst, machine, machine.coprocessor_v().vl(), 1, 16, 1);
     Ok(())
 }
 
 pub fn vcheck_vlse256_v<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    vcheck_ld!(inst, machine, machine.vl(), 1, 32, 1);
+    vcheck_ld!(inst, machine, machine.coprocessor_v().vl(), 1, 32, 1);
     Ok(())
 }
 
 pub fn handle_vlse256_v<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    handle_ld!(inst, machine, machine.vl(), 1, 32, 1);
+    handle_ld!(inst, machine, machine.coprocessor_v().vl(), 1, 32, 1);
     Ok(())
 }
 
 pub fn vcheck_vlse512_v<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    vcheck_ld!(inst, machine, machine.vl(), 1, 64, 1);
+    vcheck_ld!(inst, machine, machine.coprocessor_v().vl(), 1, 64, 1);
     Ok(())
 }
 
 pub fn handle_vlse512_v<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    handle_ld!(inst, machine, machine.vl(), 1, 64, 1);
+    handle_ld!(inst, machine, machine.coprocessor_v().vl(), 1, 64, 1);
     Ok(())
 }
 
 pub fn vcheck_vlse1024_v<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    vcheck_ld!(inst, machine, machine.vl(), 1, 128, 1);
+    vcheck_ld!(inst, machine, machine.coprocessor_v().vl(), 1, 128, 1);
     Ok(())
 }
 
 pub fn handle_vlse1024_v<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    handle_ld!(inst, machine, machine.vl(), 1, 128, 1);
+    handle_ld!(inst, machine, machine.coprocessor_v().vl(), 1, 128, 1);
     Ok(())
 }
 
 pub fn vcheck_vsse8_v<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    vcheck_sd!(inst, machine, machine.vl(), 1, 1, 1);
+    vcheck_sd!(inst, machine, machine.coprocessor_v().vl(), 1, 1, 1);
     Ok(())
 }
 
 pub fn handle_vsse8_v<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    handle_sd!(inst, machine, machine.vl(), 1, 1, 1);
+    handle_sd!(inst, machine, machine.coprocessor_v().vl(), 1, 1, 1);
     Ok(())
 }
 
 pub fn vcheck_vsse16_v<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    vcheck_sd!(inst, machine, machine.vl(), 1, 2, 1);
+    vcheck_sd!(inst, machine, machine.coprocessor_v().vl(), 1, 2, 1);
     Ok(())
 }
 
 pub fn handle_vsse16_v<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    handle_sd!(inst, machine, machine.vl(), 1, 2, 1);
+    handle_sd!(inst, machine, machine.coprocessor_v().vl(), 1, 2, 1);
     Ok(())
 }
 
 pub fn vcheck_vsse32_v<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    vcheck_sd!(inst, machine, machine.vl(), 1, 4, 1);
+    vcheck_sd!(inst, machine, machine.coprocessor_v().vl(), 1, 4, 1);
     Ok(())
 }
 
 pub fn handle_vsse32_v<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    handle_sd!(inst, machine, machine.vl(), 1, 4, 1);
+    handle_sd!(inst, machine, machine.coprocessor_v().vl(), 1, 4, 1);
     Ok(())
 }
 
 pub fn vcheck_vsse64_v<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    vcheck_sd!(inst, machine, machine.vl(), 1, 8, 1);
+    vcheck_sd!(inst, machine, machine.coprocessor_v().vl(), 1, 8, 1);
     Ok(())
 }
 
 pub fn handle_vsse64_v<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    handle_sd!(inst, machine, machine.vl(), 1, 8, 1);
+    handle_sd!(inst, machine, machine.coprocessor_v().vl(), 1, 8, 1);
     Ok(())
 }
 
 pub fn vcheck_vsse128_v<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    vcheck_sd!(inst, machine, machine.vl(), 1, 16, 1);
+    vcheck_sd!(inst, machine, machine.coprocessor_v().vl(), 1, 16, 1);
     Ok(())
 }
 
 pub fn handle_vsse128_v<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    handle_sd!(inst, machine, machine.vl(), 1, 16, 1);
+    handle_sd!(inst, machine, machine.coprocessor_v().vl(), 1, 16, 1);
     Ok(())
 }
 
 pub fn vcheck_vsse256_v<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    vcheck_sd!(inst, machine, machine.vl(), 1, 32, 1);
+    vcheck_sd!(inst, machine, machine.coprocessor_v().vl(), 1, 32, 1);
     Ok(())
 }
 
 pub fn handle_vsse256_v<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    handle_sd!(inst, machine, machine.vl(), 1, 32, 1);
+    handle_sd!(inst, machine, machine.coprocessor_v().vl(), 1, 32, 1);
     Ok(())
 }
 
 pub fn vcheck_vsse512_v<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    vcheck_sd!(inst, machine, machine.vl(), 1, 64, 1);
+    vcheck_sd!(inst, machine, machine.coprocessor_v().vl(), 1, 64, 1);
     Ok(())
 }
 
 pub fn handle_vsse512_v<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    handle_sd!(inst, machine, machine.vl(), 1, 64, 1);
+    handle_sd!(inst, machine, machine.coprocessor_v().vl(), 1, 64, 1);
     Ok(())
 }
 
 pub fn vcheck_vsse1024_v<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    vcheck_sd!(inst, machine, machine.vl(), 1, 128, 1);
+    vcheck_sd!(inst, machine, machine.coprocessor_v().vl(), 1, 128, 1);
     Ok(())
 }
 
 pub fn handle_vsse1024_v<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    handle_sd!(inst, machine, machine.vl(), 1, 128, 1);
+    handle_sd!(inst, machine, machine.coprocessor_v().vl(), 1, 128, 1);
     Ok(())
 }
 
@@ -3889,7 +3917,7 @@ pub fn handle_vmsof_m<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Res
 
 pub fn vcheck_viota_m<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
     require_vill!(machine);
-    let lmul = machine.vlmul();
+    let lmul = machine.coprocessor_v().vlmul();
     let i = VVtype(inst);
     require_align!(i.vd() as u64, lmul as u64);
     require_noover!(i.vd() as u64, lmul as u64, i.vs2() as u64, 1);
@@ -3898,25 +3926,41 @@ pub fn vcheck_viota_m<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Res
 }
 
 pub fn handle_viota_m<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    let sew = machine.vsew();
+    let sew = machine.coprocessor_v().vsew();
     let i = VVtype(inst);
     let mut iota: u32 = 0;
-    for j in 0..machine.vl() as usize {
-        if i.vm() == 0 && !machine.get_bit(0, j) {
+    for j in 0..machine.coprocessor_v().vl() as usize {
+        if i.vm() == 0 && !machine.coprocessor_v().get_bit(0, j) {
             continue;
         }
         match sew {
-            8 => E8::from(iota as u8).put(machine.element_mut(i.vd(), sew, j)),
-            16 => E16::from(iota as u16).put(machine.element_mut(i.vd(), sew, j)),
-            32 => E32::from(iota as u16).put(machine.element_mut(i.vd(), sew, j)),
-            64 => E64::from(iota as u16).put(machine.element_mut(i.vd(), sew, j)),
-            128 => E128::from(iota as u16).put(machine.element_mut(i.vd(), sew, j)),
-            256 => E256::from(iota as u16).put(machine.element_mut(i.vd(), sew, j)),
-            512 => E512::from(iota as u16).put(machine.element_mut(i.vd(), sew, j)),
-            1024 => E1024::from(iota as u16).put(machine.element_mut(i.vd(), sew, j)),
+            8 => E8::from(iota as u8).put(machine.coprocessor_v_mut().element_mut(i.vd(), sew, j)),
+            16 => {
+                E16::from(iota as u16).put(machine.coprocessor_v_mut().element_mut(i.vd(), sew, j))
+            }
+            32 => {
+                E32::from(iota as u16).put(machine.coprocessor_v_mut().element_mut(i.vd(), sew, j))
+            }
+            64 => {
+                E64::from(iota as u16).put(machine.coprocessor_v_mut().element_mut(i.vd(), sew, j))
+            }
+            128 => {
+                E128::from(iota as u16).put(machine.coprocessor_v_mut().element_mut(i.vd(), sew, j))
+            }
+            256 => {
+                E256::from(iota as u16).put(machine.coprocessor_v_mut().element_mut(i.vd(), sew, j))
+            }
+            512 => {
+                E512::from(iota as u16).put(machine.coprocessor_v_mut().element_mut(i.vd(), sew, j))
+            }
+            1024 => E1024::from(iota as u16).put(machine.coprocessor_v_mut().element_mut(
+                i.vd(),
+                sew,
+                j,
+            )),
             _ => unreachable!(),
         }
-        if machine.get_bit(i.vs2(), j) {
+        if machine.coprocessor_v().get_bit(i.vs2(), j) {
             iota += 1;
         }
     }
@@ -3925,7 +3969,7 @@ pub fn handle_viota_m<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Res
 
 pub fn vcheck_vid_v<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
     require_vill!(machine);
-    let lmul = machine.vlmul();
+    let lmul = machine.coprocessor_v().vlmul();
     let i = VVtype(inst);
     require_align!(i.vd() as u64, lmul as u64);
     require_vm!(i);
@@ -3933,21 +3977,29 @@ pub fn vcheck_vid_v<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Resul
 }
 
 pub fn handle_vid_v<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    let sew = machine.vsew();
+    let sew = machine.coprocessor_v().vsew();
     let i = VVtype(inst);
-    for j in 0..machine.vl() as usize {
-        if i.vm() == 0 && !machine.get_bit(0, j) {
+    for j in 0..machine.coprocessor_v().vl() as usize {
+        if i.vm() == 0 && !machine.coprocessor_v().get_bit(0, j) {
             continue;
         }
         match sew {
-            8 => E8::from(j as u8).put(machine.element_mut(i.vd(), sew, j)),
-            16 => E16::from(j as u16).put(machine.element_mut(i.vd(), sew, j)),
-            32 => E32::from(j as u16).put(machine.element_mut(i.vd(), sew, j)),
-            64 => E64::from(j as u16).put(machine.element_mut(i.vd(), sew, j)),
-            128 => E128::from(j as u16).put(machine.element_mut(i.vd(), sew, j)),
-            256 => E256::from(j as u16).put(machine.element_mut(i.vd(), sew, j)),
-            512 => E512::from(j as u16).put(machine.element_mut(i.vd(), sew, j)),
-            1024 => E1024::from(j as u16).put(machine.element_mut(i.vd(), sew, j)),
+            8 => E8::from(j as u8).put(machine.coprocessor_v_mut().element_mut(i.vd(), sew, j)),
+            16 => E16::from(j as u16).put(machine.coprocessor_v_mut().element_mut(i.vd(), sew, j)),
+            32 => E32::from(j as u16).put(machine.coprocessor_v_mut().element_mut(i.vd(), sew, j)),
+            64 => E64::from(j as u16).put(machine.coprocessor_v_mut().element_mut(i.vd(), sew, j)),
+            128 => {
+                E128::from(j as u16).put(machine.coprocessor_v_mut().element_mut(i.vd(), sew, j))
+            }
+            256 => {
+                E256::from(j as u16).put(machine.coprocessor_v_mut().element_mut(i.vd(), sew, j))
+            }
+            512 => {
+                E512::from(j as u16).put(machine.coprocessor_v_mut().element_mut(i.vd(), sew, j))
+            }
+            1024 => {
+                E1024::from(j as u16).put(machine.coprocessor_v_mut().element_mut(i.vd(), sew, j))
+            }
             _ => unreachable!(),
         }
     }
@@ -3960,17 +4012,17 @@ pub fn vcheck_vmv_x_s<Mac: Machine>(machine: &mut Mac, _inst: Instruction) -> Re
 }
 
 pub fn handle_vmv_x_s<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    let sew = machine.vsew();
+    let sew = machine.coprocessor_v().vsew();
     let i = VVtype(inst);
     let r = match sew {
-        8 => E8::get(machine.element_ref(i.vs2(), sew, 0)).0 as i8 as i64 as u64,
-        16 => E16::get(machine.element_ref(i.vs2(), sew, 0)).0 as i16 as i64 as u64,
-        32 => E32::get(machine.element_ref(i.vs2(), sew, 0)).0 as i32 as i64 as u64,
-        64 => E64::get(machine.element_ref(i.vs2(), sew, 0)).u64(),
-        128 => E128::get(machine.element_ref(i.vs2(), sew, 0)).u64(),
-        256 => E256::get(machine.element_ref(i.vs2(), sew, 0)).u64(),
-        512 => E512::get(machine.element_ref(i.vs2(), sew, 0)).u64(),
-        1024 => E1024::get(machine.element_ref(i.vs2(), sew, 0)).u64(),
+        8 => E8::get(machine.coprocessor_v().element_ref(i.vs2(), sew, 0)).0 as i8 as i64 as u64,
+        16 => E16::get(machine.coprocessor_v().element_ref(i.vs2(), sew, 0)).0 as i16 as i64 as u64,
+        32 => E32::get(machine.coprocessor_v().element_ref(i.vs2(), sew, 0)).0 as i32 as i64 as u64,
+        64 => E64::get(machine.coprocessor_v().element_ref(i.vs2(), sew, 0)).u64(),
+        128 => E128::get(machine.coprocessor_v().element_ref(i.vs2(), sew, 0)).u64(),
+        256 => E256::get(machine.coprocessor_v().element_ref(i.vs2(), sew, 0)).u64(),
+        512 => E512::get(machine.coprocessor_v().element_ref(i.vs2(), sew, 0)).u64(),
+        1024 => E1024::get(machine.coprocessor_v().element_ref(i.vs2(), sew, 0)).u64(),
         _ => unreachable!(),
     };
     update_register(machine, i.vd(), Mac::REG::from_u64(r));
@@ -3983,41 +4035,41 @@ pub fn vcheck_vmv_s_x<Mac: Machine>(machine: &mut Mac, _inst: Instruction) -> Re
 }
 
 pub fn handle_vmv_s_x<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    let sew = machine.vsew();
+    let sew = machine.coprocessor_v().vsew();
     let i = VVtype(inst);
-    if machine.vl() != 0 {
+    if machine.coprocessor_v().vl() != 0 {
         match sew {
             8 => {
                 let e = E8::from(machine.registers()[i.vs1()].to_u64());
-                e.put(machine.element_mut(i.vd(), sew, 0));
+                e.put(machine.coprocessor_v_mut().element_mut(i.vd(), sew, 0));
             }
             16 => {
                 let e = E16::from(machine.registers()[i.vs1()].to_u64());
-                e.put(machine.element_mut(i.vd(), sew, 0));
+                e.put(machine.coprocessor_v_mut().element_mut(i.vd(), sew, 0));
             }
             32 => {
                 let e = E32::from(machine.registers()[i.vs1()].to_u64());
-                e.put(machine.element_mut(i.vd(), sew, 0));
+                e.put(machine.coprocessor_v_mut().element_mut(i.vd(), sew, 0));
             }
             64 => {
                 let e = E64::from(machine.registers()[i.vs1()].to_u64());
-                e.put(machine.element_mut(i.vd(), sew, 0));
+                e.put(machine.coprocessor_v_mut().element_mut(i.vd(), sew, 0));
             }
             128 => {
                 let e = E128::from(machine.registers()[i.vs1()].to_i64());
-                e.put(machine.element_mut(i.vd(), sew, 0));
+                e.put(machine.coprocessor_v_mut().element_mut(i.vd(), sew, 0));
             }
             256 => {
                 let e = E256::from(machine.registers()[i.vs1()].to_i64());
-                e.put(machine.element_mut(i.vd(), sew, 0));
+                e.put(machine.coprocessor_v_mut().element_mut(i.vd(), sew, 0));
             }
             512 => {
                 let e = E512::from(machine.registers()[i.vs1()].to_i64());
-                e.put(machine.element_mut(i.vd(), sew, 0));
+                e.put(machine.coprocessor_v_mut().element_mut(i.vd(), sew, 0));
             }
             1024 => {
                 let e = E1024::from(machine.registers()[i.vs1()].to_i64());
-                e.put(machine.element_mut(i.vd(), sew, 0));
+                e.put(machine.coprocessor_v_mut().element_mut(i.vd(), sew, 0));
             }
             _ => unreachable!(),
         };
@@ -4027,7 +4079,7 @@ pub fn handle_vmv_s_x<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Res
 
 pub fn vcheck_vslideup_vx<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
     require_vill!(machine);
-    let lmul = machine.vlmul();
+    let lmul = machine.coprocessor_v().vlmul();
     let i = VXtype(inst);
     require_align!(i.vd() as u64, lmul as u64);
     require_align!(i.vs2() as u64, lmul as u64);
@@ -4037,17 +4089,19 @@ pub fn vcheck_vslideup_vx<Mac: Machine>(machine: &mut Mac, inst: Instruction) ->
 }
 
 pub fn handle_vslideup_vx<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    let sew = machine.vsew();
+    let sew = machine.coprocessor_v().vsew();
     let i = VXtype(inst);
     let offset = machine.registers()[i.rs1()].to_u64();
-    for j in offset..machine.vl() {
-        if i.vm() == 0 && !machine.get_bit(0, j as usize) {
+    for j in offset..machine.coprocessor_v().vl() {
+        if i.vm() == 0 && !machine.coprocessor_v().get_bit(0, j as usize) {
             continue;
         }
         let data = machine
+            .coprocessor_v()
             .element_ref(i.vs2(), sew, (j - offset) as usize)
             .to_vec();
         machine
+            .coprocessor_v_mut()
             .element_mut(i.vd(), sew, j as usize)
             .copy_from_slice(&data);
     }
@@ -4056,7 +4110,7 @@ pub fn handle_vslideup_vx<Mac: Machine>(machine: &mut Mac, inst: Instruction) ->
 
 pub fn vcheck_vslideup_vi<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
     require_vill!(machine);
-    let lmul = machine.vlmul();
+    let lmul = machine.coprocessor_v().vlmul();
     let i = VItype(inst);
     require_align!(i.vd() as u64, lmul as u64);
     require_align!(i.vs2() as u64, lmul as u64);
@@ -4066,17 +4120,19 @@ pub fn vcheck_vslideup_vi<Mac: Machine>(machine: &mut Mac, inst: Instruction) ->
 }
 
 pub fn handle_vslideup_vi<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    let sew = machine.vsew();
+    let sew = machine.coprocessor_v().vsew();
     let i = VItype(inst);
     let offset = i.immediate_u() as u64;
-    for j in offset..machine.vl() {
-        if i.vm() == 0 && !machine.get_bit(0, j as usize) {
+    for j in offset..machine.coprocessor_v().vl() {
+        if i.vm() == 0 && !machine.coprocessor_v().get_bit(0, j as usize) {
             continue;
         }
         let data = machine
+            .coprocessor_v()
             .element_ref(i.vs2(), sew, (j - offset) as usize)
             .to_vec();
         machine
+            .coprocessor_v_mut()
             .element_mut(i.vd(), sew, j as usize)
             .copy_from_slice(&data);
     }
@@ -4088,7 +4144,7 @@ pub fn vcheck_vslidedown_vx<Mac: Machine>(
     inst: Instruction,
 ) -> Result<(), Error> {
     require_vill!(machine);
-    let lmul = machine.vlmul();
+    let lmul = machine.coprocessor_v().vlmul();
     let i = VXtype(inst);
     require_align!(i.vd() as u64, lmul as u64);
     require_align!(i.vs2() as u64, lmul as u64);
@@ -4100,20 +4156,24 @@ pub fn handle_vslidedown_vx<Mac: Machine>(
     machine: &mut Mac,
     inst: Instruction,
 ) -> Result<(), Error> {
-    let sew = machine.vsew();
+    let sew = machine.coprocessor_v().vsew();
     let i = VXtype(inst);
     let offset = machine.registers()[i.rs1()].to_u64();
-    for j in 0..machine.vl() {
-        if i.vm() == 0 && !machine.get_bit(0, j as usize) {
+    for j in 0..machine.coprocessor_v().vl() {
+        if i.vm() == 0 && !machine.coprocessor_v().get_bit(0, j as usize) {
             continue;
         }
         let (l, overflow) = offset.overflowing_add(j);
-        let data = if !overflow && l < machine.vlmax() {
-            machine.element_ref(i.vs2(), sew, l as usize).to_vec()
+        let data = if !overflow && l < machine.coprocessor_v().vlmax() {
+            machine
+                .coprocessor_v()
+                .element_ref(i.vs2(), sew, l as usize)
+                .to_vec()
         } else {
             vec![0; sew as usize >> 3]
         };
         machine
+            .coprocessor_v_mut()
             .element_mut(i.vd(), sew, j as usize)
             .copy_from_slice(&data);
     }
@@ -4125,7 +4185,7 @@ pub fn vcheck_vslidedown_vi<Mac: Machine>(
     inst: Instruction,
 ) -> Result<(), Error> {
     require_vill!(machine);
-    let lmul = machine.vlmul();
+    let lmul = machine.coprocessor_v().vlmul();
     let i = VItype(inst);
     require_align!(i.vd() as u64, lmul as u64);
     require_align!(i.vs2() as u64, lmul as u64);
@@ -4137,21 +4197,23 @@ pub fn handle_vslidedown_vi<Mac: Machine>(
     machine: &mut Mac,
     inst: Instruction,
 ) -> Result<(), Error> {
-    let sew = machine.vsew();
+    let sew = machine.coprocessor_v().vsew();
     let i = VItype(inst);
     let offset = i.immediate_u() as u64;
-    for j in 0..machine.vl() {
-        if i.vm() == 0 && !machine.get_bit(0, j as usize) {
+    for j in 0..machine.coprocessor_v().vl() {
+        if i.vm() == 0 && !machine.coprocessor_v().get_bit(0, j as usize) {
             continue;
         }
-        let data = if (j + offset) < machine.vlmax() {
+        let data = if (j + offset) < machine.coprocessor_v().vlmax() {
             machine
+                .coprocessor_v()
                 .element_ref(i.vs2(), sew, (j + offset) as usize)
                 .to_vec()
         } else {
             vec![0; sew as usize >> 3]
         };
         machine
+            .coprocessor_v_mut()
             .element_mut(i.vd(), sew, j as usize)
             .copy_from_slice(&data);
     }
@@ -4163,7 +4225,7 @@ pub fn vcheck_vslide1up_vx<Mac: Machine>(
     inst: Instruction,
 ) -> Result<(), Error> {
     require_vill!(machine);
-    let lmul = machine.vlmul();
+    let lmul = machine.coprocessor_v().vlmul();
     let i = VXtype(inst);
     require_align!(i.vd() as u64, lmul as u64);
     require_align!(i.vs2() as u64, lmul as u64);
@@ -4176,51 +4238,55 @@ pub fn handle_vslide1up_vx<Mac: Machine>(
     machine: &mut Mac,
     inst: Instruction,
 ) -> Result<(), Error> {
-    let sew = machine.vsew();
+    let sew = machine.coprocessor_v().vsew();
     let i = VXtype(inst);
-    if machine.vl() != 0 {
-        for j in 1..machine.vl() {
-            if i.vm() == 0 && !machine.get_bit(0, j as usize) {
+    if machine.coprocessor_v().vl() != 0 {
+        for j in 1..machine.coprocessor_v().vl() {
+            if i.vm() == 0 && !machine.coprocessor_v().get_bit(0, j as usize) {
                 continue;
             }
-            let data = machine.element_ref(i.vs2(), sew, (j - 1) as usize).to_vec();
+            let data = machine
+                .coprocessor_v()
+                .element_ref(i.vs2(), sew, (j - 1) as usize)
+                .to_vec();
             machine
+                .coprocessor_v_mut()
                 .element_mut(i.vd(), sew, j as usize)
                 .copy_from_slice(&data);
         }
-        if i.vm() != 0 || machine.get_bit(0, 0) {
+        if i.vm() != 0 || machine.coprocessor_v().get_bit(0, 0) {
             match sew {
                 8 => {
                     let vd0 = E8::from(machine.registers()[i.rs1()].to_u64());
-                    vd0.put(machine.element_mut(i.vd(), sew, 0));
+                    vd0.put(machine.coprocessor_v_mut().element_mut(i.vd(), sew, 0));
                 }
                 16 => {
                     let vd0 = E16::from(machine.registers()[i.rs1()].to_u64());
-                    vd0.put(machine.element_mut(i.vd(), sew, 0));
+                    vd0.put(machine.coprocessor_v_mut().element_mut(i.vd(), sew, 0));
                 }
                 32 => {
                     let vd0 = E32::from(machine.registers()[i.rs1()].to_u64());
-                    vd0.put(machine.element_mut(i.vd(), sew, 0));
+                    vd0.put(machine.coprocessor_v_mut().element_mut(i.vd(), sew, 0));
                 }
                 64 => {
                     let vd0 = E64::from(machine.registers()[i.rs1()].to_u64());
-                    vd0.put(machine.element_mut(i.vd(), sew, 0));
+                    vd0.put(machine.coprocessor_v_mut().element_mut(i.vd(), sew, 0));
                 }
                 128 => {
                     let vd0 = E128::from(machine.registers()[i.rs1()].to_i64());
-                    vd0.put(machine.element_mut(i.vd(), sew, 0));
+                    vd0.put(machine.coprocessor_v_mut().element_mut(i.vd(), sew, 0));
                 }
                 256 => {
                     let vd0 = E256::from(machine.registers()[i.rs1()].to_i64());
-                    vd0.put(machine.element_mut(i.vd(), sew, 0));
+                    vd0.put(machine.coprocessor_v_mut().element_mut(i.vd(), sew, 0));
                 }
                 512 => {
                     let vd0 = E512::from(machine.registers()[i.rs1()].to_i64());
-                    vd0.put(machine.element_mut(i.vd(), sew, 0));
+                    vd0.put(machine.coprocessor_v_mut().element_mut(i.vd(), sew, 0));
                 }
                 1024 => {
                     let vd0 = E1024::from(machine.registers()[i.rs1()].to_i64());
-                    vd0.put(machine.element_mut(i.vd(), sew, 0));
+                    vd0.put(machine.coprocessor_v_mut().element_mut(i.vd(), sew, 0));
                 }
                 _ => unreachable!(),
             }
@@ -4234,7 +4300,7 @@ pub fn vcheck_vslide1down_vx<Mac: Machine>(
     inst: Instruction,
 ) -> Result<(), Error> {
     require_vill!(machine);
-    let lmul = machine.vlmul();
+    let lmul = machine.coprocessor_v().vlmul();
     let i = VXtype(inst);
     require_align!(i.vd() as u64, lmul as u64);
     require_align!(i.vs2() as u64, lmul as u64);
@@ -4245,51 +4311,88 @@ pub fn handle_vslide1down_vx<Mac: Machine>(
     machine: &mut Mac,
     inst: Instruction,
 ) -> Result<(), Error> {
-    let sew = machine.vsew();
+    let sew = machine.coprocessor_v().vsew();
+    let vl = machine.coprocessor_v().vl();
     let i = VXtype(inst);
-    if machine.vl() != 0 {
-        for j in 0..machine.vl() - 1 {
-            if i.vm() == 0 && !machine.get_bit(0, j as usize) {
+    if vl != 0 {
+        for j in 0..vl - 1 {
+            if i.vm() == 0 && !machine.coprocessor_v().get_bit(0, j as usize) {
                 continue;
             }
-            let data = machine.element_ref(i.vs2(), sew, j as usize + 1).to_vec();
+            let data = machine
+                .coprocessor_v()
+                .element_ref(i.vs2(), sew, j as usize + 1)
+                .to_vec();
             machine
+                .coprocessor_v_mut()
                 .element_mut(i.vd(), sew, j as usize)
                 .copy_from_slice(&data);
         }
-        if i.vm() != 0 || machine.get_bit(0, machine.vl() as usize - 1) {
+        if i.vm() != 0 || machine.coprocessor_v().get_bit(0, vl as usize - 1) {
             match sew {
                 8 => {
                     let vd0 = E8::from(machine.registers()[i.rs1()].to_u64());
-                    vd0.put(machine.element_mut(i.vd(), sew, (machine.vl() - 1) as usize));
+                    vd0.put(
+                        machine
+                            .coprocessor_v_mut()
+                            .element_mut(i.vd(), sew, vl as usize - 1),
+                    );
                 }
                 16 => {
                     let vd0 = E16::from(machine.registers()[i.rs1()].to_u64());
-                    vd0.put(machine.element_mut(i.vd(), sew, (machine.vl() - 1) as usize));
+                    vd0.put(
+                        machine
+                            .coprocessor_v_mut()
+                            .element_mut(i.vd(), sew, vl as usize - 1),
+                    );
                 }
                 32 => {
                     let vd0 = E32::from(machine.registers()[i.rs1()].to_u64());
-                    vd0.put(machine.element_mut(i.vd(), sew, (machine.vl() - 1) as usize));
+                    vd0.put(
+                        machine
+                            .coprocessor_v_mut()
+                            .element_mut(i.vd(), sew, vl as usize - 1),
+                    );
                 }
                 64 => {
                     let vd0 = E64::from(machine.registers()[i.rs1()].to_u64());
-                    vd0.put(machine.element_mut(i.vd(), sew, (machine.vl() - 1) as usize));
+                    vd0.put(
+                        machine
+                            .coprocessor_v_mut()
+                            .element_mut(i.vd(), sew, vl as usize - 1),
+                    );
                 }
                 128 => {
                     let vd0 = E128::from(machine.registers()[i.rs1()].to_i64());
-                    vd0.put(machine.element_mut(i.vd(), sew, (machine.vl() - 1) as usize));
+                    vd0.put(
+                        machine
+                            .coprocessor_v_mut()
+                            .element_mut(i.vd(), sew, vl as usize - 1),
+                    );
                 }
                 256 => {
                     let vd0 = E256::from(machine.registers()[i.rs1()].to_i64());
-                    vd0.put(machine.element_mut(i.vd(), sew, (machine.vl() - 1) as usize));
+                    vd0.put(
+                        machine
+                            .coprocessor_v_mut()
+                            .element_mut(i.vd(), sew, vl as usize - 1),
+                    );
                 }
                 512 => {
                     let vd0 = E512::from(machine.registers()[i.rs1()].to_i64());
-                    vd0.put(machine.element_mut(i.vd(), sew, (machine.vl() - 1) as usize));
+                    vd0.put(
+                        machine
+                            .coprocessor_v_mut()
+                            .element_mut(i.vd(), sew, vl as usize - 1),
+                    );
                 }
                 1024 => {
                     let vd0 = E1024::from(machine.registers()[i.rs1()].to_i64());
-                    vd0.put(machine.element_mut(i.vd(), sew, (machine.vl() - 1) as usize));
+                    vd0.put(
+                        machine
+                            .coprocessor_v_mut()
+                            .element_mut(i.vd(), sew, vl as usize - 1),
+                    );
                 }
                 _ => unreachable!(),
             }
@@ -4300,7 +4403,7 @@ pub fn handle_vslide1down_vx<Mac: Machine>(
 
 pub fn vcheck_vrgather_vv<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
     require_vill!(machine);
-    let lmul = machine.vlmul();
+    let lmul = machine.coprocessor_v().vlmul();
     let i = VVtype(inst);
     require_align!(i.vd() as u64, lmul as u64);
     require_align!(i.vs1() as u64, lmul as u64);
@@ -4312,32 +4415,39 @@ pub fn vcheck_vrgather_vv<Mac: Machine>(machine: &mut Mac, inst: Instruction) ->
 }
 
 pub fn handle_vrgather_vv<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    let sew = machine.vsew();
+    let sew = machine.coprocessor_v().vsew();
     let i = VVtype(inst);
-    for j in 0..machine.vl() as usize {
-        if i.vm() == 0 && !machine.get_bit(0, j) {
+    for j in 0..machine.coprocessor_v().vl() as usize {
+        if i.vm() == 0 && !machine.coprocessor_v().get_bit(0, j) {
             continue;
         }
         let index = {
-            let mut data = machine.element_ref(i.vs1(), sew, j).to_vec();
+            let mut data = machine
+                .coprocessor_v()
+                .element_ref(i.vs1(), sew, j)
+                .to_vec();
             data.resize(128, 0);
             E1024::get(&data)
         };
-        let data = if index < E1024::from(machine.vlmax()) {
+        let data = if index < E1024::from(machine.coprocessor_v().vlmax()) {
             machine
+                .coprocessor_v()
                 .element_ref(i.vs2(), sew, index.u64() as usize)
                 .to_vec()
         } else {
             vec![0; sew as usize >> 3]
         };
-        machine.element_mut(i.vd(), sew, j).copy_from_slice(&data);
+        machine
+            .coprocessor_v_mut()
+            .element_mut(i.vd(), sew, j)
+            .copy_from_slice(&data);
     }
     Ok(())
 }
 
 pub fn vcheck_vrgather_vx<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
     require_vill!(machine);
-    let lmul = machine.vlmul();
+    let lmul = machine.coprocessor_v().vlmul();
     let i = VXtype(inst);
     require_align!(i.vd() as u64, lmul as u64);
     require_align!(i.vs2() as u64, lmul as u64);
@@ -4347,26 +4457,32 @@ pub fn vcheck_vrgather_vx<Mac: Machine>(machine: &mut Mac, inst: Instruction) ->
 }
 
 pub fn handle_vrgather_vx<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    let sew = machine.vsew();
+    let sew = machine.coprocessor_v().vsew();
     let i = VXtype(inst);
-    for j in 0..machine.vl() as usize {
-        if i.vm() == 0 && !machine.get_bit(0, j) {
+    for j in 0..machine.coprocessor_v().vl() as usize {
+        if i.vm() == 0 && !machine.coprocessor_v().get_bit(0, j) {
             continue;
         }
         let index = machine.registers()[i.rs1()].to_u64();
-        let data = if index < machine.vlmax() {
-            machine.element_ref(i.vs2(), sew, index as usize).to_vec()
+        let data = if index < machine.coprocessor_v().vlmax() {
+            machine
+                .coprocessor_v()
+                .element_ref(i.vs2(), sew, index as usize)
+                .to_vec()
         } else {
             vec![0; sew as usize >> 3]
         };
-        machine.element_mut(i.vd(), sew, j).copy_from_slice(&data);
+        machine
+            .coprocessor_v_mut()
+            .element_mut(i.vd(), sew, j)
+            .copy_from_slice(&data);
     }
     Ok(())
 }
 
 pub fn vcheck_vrgather_vi<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
     require_vill!(machine);
-    let lmul = machine.vlmul();
+    let lmul = machine.coprocessor_v().vlmul();
     let i = VItype(inst);
     require_align!(i.vd() as u64, lmul as u64);
     require_align!(i.vs2() as u64, lmul as u64);
@@ -4376,19 +4492,25 @@ pub fn vcheck_vrgather_vi<Mac: Machine>(machine: &mut Mac, inst: Instruction) ->
 }
 
 pub fn handle_vrgather_vi<Mac: Machine>(machine: &mut Mac, inst: Instruction) -> Result<(), Error> {
-    let sew = machine.vsew();
+    let sew = machine.coprocessor_v().vsew();
     let i = VItype(inst);
-    for j in 0..machine.vl() as usize {
-        if i.vm() == 0 && !machine.get_bit(0, j) {
+    for j in 0..machine.coprocessor_v().vl() as usize {
+        if i.vm() == 0 && !machine.coprocessor_v().get_bit(0, j) {
             continue;
         }
         let index = i.immediate_u() as u64;
-        let data = if index < machine.vlmax() {
-            machine.element_ref(i.vs2(), sew, index as usize).to_vec()
+        let data = if index < machine.coprocessor_v().vlmax() {
+            machine
+                .coprocessor_v()
+                .element_ref(i.vs2(), sew, index as usize)
+                .to_vec()
         } else {
             vec![0; sew as usize >> 3]
         };
-        machine.element_mut(i.vd(), sew, j).copy_from_slice(&data);
+        machine
+            .coprocessor_v_mut()
+            .element_mut(i.vd(), sew, j)
+            .copy_from_slice(&data);
     }
     Ok(())
 }
@@ -4398,8 +4520,8 @@ pub fn vcheck_vrgatherei16_vv<Mac: Machine>(
     inst: Instruction,
 ) -> Result<(), Error> {
     require_vill!(machine);
-    let sew = machine.vsew();
-    let lmul = machine.vlmul();
+    let sew = machine.coprocessor_v().vsew();
+    let lmul = machine.coprocessor_v().vlmul();
     let i = VVtype(inst);
     let emul = 16.0 / sew as f64 * lmul;
     require_emul!(emul);
@@ -4416,19 +4538,25 @@ pub fn handle_vrgatherei16_vv<Mac: Machine>(
     machine: &mut Mac,
     inst: Instruction,
 ) -> Result<(), Error> {
-    let sew = machine.vsew();
+    let sew = machine.coprocessor_v().vsew();
     let i = VVtype(inst);
-    for j in 0..machine.vl() as usize {
-        if i.vm() == 0 && !machine.get_bit(0, j) {
+    for j in 0..machine.coprocessor_v().vl() as usize {
+        if i.vm() == 0 && !machine.coprocessor_v().get_bit(0, j) {
             continue;
         }
-        let index = E16::get(&machine.element_ref(i.vs1(), 16, j)).u64();
-        let data = if index < machine.vlmax() {
-            machine.element_ref(i.vs2(), sew, index as usize).to_vec()
+        let index = E16::get(&machine.coprocessor_v().element_ref(i.vs1(), 16, j)).u64();
+        let data = if index < machine.coprocessor_v().vlmax() {
+            machine
+                .coprocessor_v()
+                .element_ref(i.vs2(), sew, index as usize)
+                .to_vec()
         } else {
             vec![0; sew as usize >> 3]
         };
-        machine.element_mut(i.vd(), sew, j).copy_from_slice(&data);
+        machine
+            .coprocessor_v_mut()
+            .element_mut(i.vd(), sew, j)
+            .copy_from_slice(&data);
     }
     Ok(())
 }
@@ -4438,7 +4566,7 @@ pub fn vcheck_vcompress_vm<Mac: Machine>(
     inst: Instruction,
 ) -> Result<(), Error> {
     require_vill!(machine);
-    let lmul = machine.vlmul();
+    let lmul = machine.coprocessor_v().vlmul();
     let i = VVtype(inst);
     require_align!(i.vd() as u64, lmul as u64);
     require_align!(i.vs2() as u64, lmul as u64);
@@ -4451,13 +4579,19 @@ pub fn handle_vcompress_vm<Mac: Machine>(
     machine: &mut Mac,
     inst: Instruction,
 ) -> Result<(), Error> {
-    let sew = machine.vsew();
+    let sew = machine.coprocessor_v().vsew();
     let i = VVtype(inst);
     let mut k = 0;
-    for j in 0..machine.vl() as usize {
-        if machine.get_bit(i.vs1(), j) {
-            let data = machine.element_ref(i.vs2(), sew, j).to_vec();
-            machine.element_mut(i.vd(), sew, k).copy_from_slice(&data);
+    for j in 0..machine.coprocessor_v().vl() as usize {
+        if machine.coprocessor_v().get_bit(i.vs1(), j) {
+            let data = machine
+                .coprocessor_v()
+                .element_ref(i.vs2(), sew, j)
+                .to_vec();
+            machine
+                .coprocessor_v_mut()
+                .element_mut(i.vd(), sew, k)
+                .copy_from_slice(&data);
             k += 1;
         }
     }

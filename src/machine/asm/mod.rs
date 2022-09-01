@@ -5,7 +5,7 @@ use crate::{
         generate_handle_function_list, generate_vcheck_function_list, instruction_length,
         is_basic_block_end_instruction, is_slowpath_instruction, Instruction,
     },
-    machine::VERSION0,
+    machine::{CoprocessorV, VERSION0},
     memory::{
         fill_page_data, get_page_indices, memset, round_page_down, round_page_up, FLAG_DIRTY,
         FLAG_EXECUTABLE, FLAG_FREEZED, FLAG_WRITABLE, FLAG_WXORX_BIT,
@@ -23,8 +23,8 @@ use ckb_vm_definitions::{
         RET_SLOWPATH_TRACE, TRACE_ITEM_LENGTH, TRACE_SIZE,
     },
     instructions::{OP_CUSTOM_TRACE_END, OP_VSETIVLI, OP_VSETVL, OP_VSETVLI},
-    ELEN, ISA_MOP, MEMORY_FRAMES, MEMORY_FRAME_PAGE_SHIFTS, RISCV_GENERAL_REGISTER_NUMBER,
-    RISCV_PAGE_SHIFTS, VLEN,
+    ISA_MOP, MEMORY_FRAMES, MEMORY_FRAME_PAGE_SHIFTS, RISCV_GENERAL_REGISTER_NUMBER,
+    RISCV_PAGE_SHIFTS,
 };
 use libc::c_uchar;
 use memmap::Mmap;
@@ -34,20 +34,34 @@ use std::collections::HashMap;
 use std::mem::transmute;
 use std::sync::Arc;
 
-impl CoreMachine for Box<AsmCoreMachine> {
+pub struct AsmGlueMachine {
+    pub imc: Box<AsmCoreMachine>,
+    pub rvv: CoprocessorV,
+}
+
+impl AsmGlueMachine {
+    pub fn new(machine: Box<AsmCoreMachine>) -> Self {
+        Self {
+            imc: machine,
+            rvv: CoprocessorV::new(),
+        }
+    }
+}
+
+impl CoreMachine for AsmGlueMachine {
     type REG = u64;
     type MEM = Self;
 
     fn pc(&self) -> &Self::REG {
-        &self.pc
+        &self.imc.pc
     }
 
     fn update_pc(&mut self, pc: Self::REG) {
-        self.next_pc = pc;
+        self.imc.next_pc = pc;
     }
 
     fn commit_pc(&mut self) {
-        self.pc = self.next_pc;
+        self.imc.pc = self.imc.next_pc;
     }
 
     fn memory(&self) -> &Self {
@@ -59,117 +73,27 @@ impl CoreMachine for Box<AsmCoreMachine> {
     }
 
     fn registers(&self) -> &[Self::REG] {
-        &self.registers
+        &self.imc.registers
     }
 
     fn set_register(&mut self, idx: usize, value: Self::REG) {
-        self.registers[idx] = value;
+        self.imc.registers[idx] = value;
+    }
+
+    fn coprocessor_v(&self) -> &CoprocessorV {
+        &self.rvv
+    }
+
+    fn coprocessor_v_mut(&mut self) -> &mut CoprocessorV {
+        &mut self.rvv
     }
 
     fn isa(&self) -> u8 {
-        self.isa
+        self.imc.isa
     }
 
     fn version(&self) -> u32 {
-        self.version
-    }
-
-    fn element_ref(&self, reg: usize, sew: u64, n: usize) -> &[u8] {
-        let lb = (sew as usize) >> 3;
-        let i0 = reg * (VLEN >> 3) + lb * n;
-        let i1 = i0 + lb;
-        &self.register_file[i0..i1]
-    }
-
-    fn element_mut(&mut self, reg: usize, sew: u64, n: usize) -> &mut [u8] {
-        let lb = (sew as usize) >> 3;
-        let i0 = reg * (VLEN >> 3) + lb * n;
-        let i1 = i0 + lb;
-        &mut self.register_file[i0..i1]
-    }
-
-    fn get_bit(&self, reg: usize, n: usize) -> bool {
-        let n = reg * VLEN + n;
-        (self.register_file[n / 8] << (7 - n % 8) >> 7) != 0
-    }
-
-    fn set_bit(&mut self, reg: usize, n: usize) {
-        let n = reg * VLEN + n;
-        self.register_file[n / 8] |= 1 << (n % 8)
-    }
-
-    fn clr_bit(&mut self, reg: usize, n: usize) {
-        let n = reg * VLEN + n;
-        self.register_file[n / 8] &= !(1 << (n % 8))
-    }
-
-    fn set_vl(&mut self, rd: usize, rs1: usize, avl: u64, new_type: u64) {
-        if self.vtype != new_type {
-            self.vtype = new_type;
-            self.vsew = 1 << (((new_type >> 3) & 0x7) + 3);
-            self.vlmul = match new_type & 0x7 {
-                0b000 => 1.0,
-                0b001 => 2.0,
-                0b010 => 4.0,
-                0b011 => 8.0,
-                0b111 => 0.5,
-                0b110 => 0.25,
-                0b101 => 0.125,
-                _ => 0.0625,
-            };
-            self.vlmax = ((VLEN as u64 / self.vsew) as f64 * self.vlmul) as u64;
-            self.vta = ((new_type >> 6) & 0x1) != 0;
-            self.vma = ((new_type >> 7) & 0x1) != 0;
-            self.vill = self.vlmul == 0.0625
-                || (new_type >> 8) != 0
-                || self.vsew as f64 > if self.vlmul > 1.0 { 1.0 } else { self.vlmul } * ELEN as f64;
-            if self.vill {
-                self.vlmax = 0;
-                self.vtype = 1 << 63;
-            }
-        }
-        if self.vlmax == 0 {
-            self.vl = 0;
-        } else if rd == 0 && rs1 == 0 {
-            self.vl = std::cmp::min(self.vl, self.vlmax);
-        } else if rd != 0 && rs1 == 0 {
-            self.vl = self.vlmax;
-        } else if rs1 != 0 {
-            self.vl = std::cmp::min(avl, self.vlmax);
-        }
-        self.vstart = 0;
-    }
-
-    fn vl(&self) -> u64 {
-        self.vl
-    }
-
-    fn vlmax(&self) -> u64 {
-        self.vlmax
-    }
-
-    fn vsew(&self) -> u64 {
-        self.vsew
-    }
-
-    fn vlmul(&self) -> f64 {
-        self.vlmul
-    }
-
-    fn vta(&self) -> bool {
-        self.vta
-    }
-
-    fn vma(&self) -> bool {
-        self.vma
-    }
-
-    fn vill(&self) -> bool {
-        self.vill
-    }
-
-    fn vlenb(&self) -> u64 {
-        self.vlenb
+        self.imc.version
     }
 }
 
@@ -481,44 +405,124 @@ impl Memory for Box<AsmCoreMachine> {
     }
 }
 
-impl SupportMachine for Box<AsmCoreMachine> {
+impl Memory for AsmGlueMachine {
+    type REG = u64;
+
+    fn init_pages(
+        &mut self,
+        addr: u64,
+        size: u64,
+        flags: u8,
+        source: Option<Bytes>,
+        offset_from_addr: u64,
+    ) -> Result<(), Error> {
+        self.imc
+            .init_pages(addr, size, flags, source, offset_from_addr)
+    }
+
+    fn fetch_flag(&mut self, page: u64) -> Result<u8, Error> {
+        self.imc.fetch_flag(page)
+    }
+
+    fn set_flag(&mut self, page: u64, flag: u8) -> Result<(), Error> {
+        self.imc.set_flag(page, flag)
+    }
+
+    fn clear_flag(&mut self, page: u64, flag: u8) -> Result<(), Error> {
+        self.imc.clear_flag(page, flag)
+    }
+
+    fn store_bytes(&mut self, addr: u64, value: &[u8]) -> Result<(), Error> {
+        self.imc.store_bytes(addr, value)
+    }
+
+    fn store_byte(&mut self, addr: u64, size: u64, value: u8) -> Result<(), Error> {
+        self.imc.store_byte(addr, size, value)
+    }
+
+    fn load_bytes(&mut self, addr: u64, size: u64) -> Result<Vec<u8>, Error> {
+        self.imc.load_bytes(addr, size)
+    }
+
+    fn execute_load16(&mut self, addr: u64) -> Result<u16, Error> {
+        self.imc.execute_load16(addr)
+    }
+
+    fn execute_load32(&mut self, addr: u64) -> Result<u32, Error> {
+        self.imc.execute_load32(addr)
+    }
+
+    fn load8(&mut self, addr: &u64) -> Result<u64, Error> {
+        self.imc.load8(addr)
+    }
+
+    fn load16(&mut self, addr: &u64) -> Result<u64, Error> {
+        self.imc.load16(addr)
+    }
+
+    fn load32(&mut self, addr: &u64) -> Result<u64, Error> {
+        self.imc.load32(addr)
+    }
+
+    fn load64(&mut self, addr: &u64) -> Result<u64, Error> {
+        self.imc.load64(addr)
+    }
+
+    fn store8(&mut self, addr: &u64, value: &u64) -> Result<(), Error> {
+        self.imc.store8(addr, value)
+    }
+
+    fn store16(&mut self, addr: &u64, value: &u64) -> Result<(), Error> {
+        self.imc.store16(addr, value)
+    }
+
+    fn store32(&mut self, addr: &u64, value: &u64) -> Result<(), Error> {
+        self.imc.store32(addr, value)
+    }
+
+    fn store64(&mut self, addr: &u64, value: &u64) -> Result<(), Error> {
+        self.imc.store64(addr, value)
+    }
+}
+
+impl SupportMachine for AsmGlueMachine {
     fn cycles(&self) -> u64 {
-        self.cycles
+        self.imc.cycles
     }
 
     fn set_cycles(&mut self, cycles: u64) {
-        self.cycles = cycles;
+        self.imc.cycles = cycles;
     }
 
     fn max_cycles(&self) -> u64 {
-        self.max_cycles
+        self.imc.max_cycles
     }
 
     fn reset(&mut self, max_cycles: u64) {
-        self.registers = [0; RISCV_GENERAL_REGISTER_NUMBER];
-        self.pc = 0;
-        self.flags = [0; RISCV_PAGES];
+        self.imc.registers = [0; RISCV_GENERAL_REGISTER_NUMBER];
+        self.imc.pc = 0;
+        self.imc.flags = [0; RISCV_PAGES];
         for i in 0..TRACE_SIZE {
-            self.traces[i] = Trace::default();
+            self.imc.traces[i] = Trace::default();
         }
-        self.frames = [0; MEMORY_FRAMES];
-        self.cycles = 0;
-        self.max_cycles = max_cycles;
-        self.reset_signal = 1;
+        self.imc.frames = [0; MEMORY_FRAMES];
+        self.imc.cycles = 0;
+        self.imc.max_cycles = max_cycles;
+        self.imc.reset_signal = 1;
     }
 
     fn reset_signal(&mut self) -> bool {
-        let ret = self.reset_signal != 0;
-        self.reset_signal = 0;
+        let ret = self.imc.reset_signal != 0;
+        self.imc.reset_signal = 0;
         ret
     }
 
     fn running(&self) -> bool {
-        self.running == 1
+        self.imc.running == 1
     }
 
     fn set_running(&mut self, running: bool) {
-        self.running = if running { 1 } else { 0 }
+        self.imc.running = if running { 1 } else { 0 }
     }
 
     #[cfg(feature = "pprof")]
@@ -571,7 +575,7 @@ impl AotCode {
 }
 
 pub struct AsmMachine {
-    pub machine: DefaultMachine<Box<AsmCoreMachine>>,
+    pub machine: DefaultMachine<AsmGlueMachine>,
     pub aot_code: Option<Arc<AotCode>>,
 }
 
@@ -583,18 +587,12 @@ extern "C" {
 }
 
 impl AsmMachine {
-    pub fn new(
-        machine: DefaultMachine<Box<AsmCoreMachine>>,
-        aot_code: Option<Arc<AotCode>>,
-    ) -> Self {
-        let mut r = Self { machine, aot_code };
-        // Default to illegal configuration
-        r.machine.set_vl(0, 0, 0, u64::MAX);
-        r
+    pub fn new(machine: DefaultMachine<AsmGlueMachine>, aot_code: Option<Arc<AotCode>>) -> Self {
+        Self { machine, aot_code }
     }
 
     pub fn set_max_cycles(&mut self, cycles: u64) {
-        self.machine.inner.max_cycles = cycles;
+        self.machine.inner.imc.max_cycles = cycles;
     }
 
     pub fn load_program(&mut self, program: &Bytes, args: &[Bytes]) -> Result<u64, Error> {
@@ -607,9 +605,9 @@ impl AsmMachine {
         }
         let mut decoder = build_decoder::<u64>(self.machine.isa(), self.machine.version());
         let vcheck_function_list =
-            generate_vcheck_function_list::<DefaultMachine<Box<AsmCoreMachine>>>();
+            generate_vcheck_function_list::<DefaultMachine<AsmGlueMachine>>();
         let handle_function_list =
-            generate_handle_function_list::<DefaultMachine<Box<AsmCoreMachine>>>();
+            generate_handle_function_list::<DefaultMachine<AsmGlueMachine>>();
         self.machine.set_running(true);
         while self.machine.running() {
             if self.machine.reset_signal() {
@@ -623,12 +621,12 @@ impl AsmMachine {
                     let f = unsafe {
                         transmute::<u64, fn(*mut AsmCoreMachine, u64) -> u8>(base_address)
                     };
-                    f(&mut (**self.machine.inner_mut()), offset_address)
+                    f(&mut *(self.machine.inner_mut().imc), offset_address)
                 } else {
-                    unsafe { ckb_vm_x64_execute(&mut (**self.machine.inner_mut())) }
+                    unsafe { ckb_vm_x64_execute(&mut *(self.machine.inner_mut().imc)) }
                 }
             } else {
-                unsafe { ckb_vm_x64_execute(&mut (**self.machine.inner_mut())) }
+                unsafe { ckb_vm_x64_execute(&mut *(self.machine.inner_mut().imc)) }
             };
             match result {
                 RET_DECODE_TRACE => {
@@ -674,7 +672,7 @@ impl AsmMachine {
                     };
                     trace.address = pc;
                     trace.length = (current_pc - pc) as u8;
-                    self.machine.inner_mut().traces[slot] = trace;
+                    self.machine.inner_mut().imc.traces[slot] = trace;
                     probe!(default, trace_instruction_count, i as isize);
                 }
                 RET_ECALL => self.machine.ecall()?,
@@ -689,8 +687,8 @@ impl AsmMachine {
                     let instruction = decoder.decode(self.machine.memory_mut(), pc)?;
                     let cycles = self.machine.instruction_cycle_func()(
                         instruction,
-                        self.machine.vl(),
-                        self.machine.vsew(),
+                        self.machine.inner.rvv.vl(),
+                        self.machine.inner.rvv.vsew(),
                     );
                     self.machine.add_cycles(cycles)?;
                     let op = extract_opcode(instruction);
@@ -701,12 +699,14 @@ impl AsmMachine {
                 RET_SLOWPATH_TRACE => {
                     let pc = *self.machine.pc();
                     let slot = calculate_slot(pc);
-                    let slowpath = self.machine.inner_mut().traces[slot].slowpath;
+                    let slowpath = self.machine.inner_mut().imc.traces[slot].slowpath;
                     match slowpath {
                         0b101 => {
-                            let cycles = self.machine.inner_mut().traces[slot].cycles;
+                            let cycles = self.machine.inner_mut().imc.traces[slot].cycles;
                             self.machine.add_cycles(cycles)?;
-                            for instruction in self.machine.inner_mut().traces[slot].instructions {
+                            for instruction in
+                                self.machine.inner_mut().imc.traces[slot].instructions
+                            {
                                 if instruction == blank_instruction(OP_CUSTOM_TRACE_END) {
                                     break;
                                 }
@@ -719,17 +719,19 @@ impl AsmMachine {
                             probe!(default, slow_path_trace, 1);
                         }
                         0b011 => {
-                            let cycles = self.machine.inner_mut().traces[slot].cycles;
+                            let cycles = self.machine.inner_mut().imc.traces[slot].cycles;
                             self.machine.add_cycles(cycles)?;
-                            for instruction in self.machine.inner_mut().traces[slot].instructions {
+                            for instruction in
+                                self.machine.inner_mut().imc.traces[slot].instructions
+                            {
                                 if instruction == blank_instruction(OP_CUSTOM_TRACE_END) {
                                     break;
                                 }
                                 if is_slowpath_instruction(instruction) {
                                     let cycles = self.machine.instruction_cycle_func()(
                                         instruction,
-                                        self.machine.vl(),
-                                        self.machine.vsew(),
+                                        self.machine.inner.rvv.vl(),
+                                        self.machine.inner.rvv.vsew(),
                                     );
                                     self.machine.add_cycles(cycles)?;
                                 }
@@ -742,12 +744,15 @@ impl AsmMachine {
                             probe!(default, slow_path_trace, 1);
                         }
                         _ => {
-                            match vtrace_type(&self.machine.inner_mut().traces[slot].instructions) {
+                            match vtrace_type(
+                                &self.machine.inner_mut().imc.traces[slot].instructions,
+                            ) {
                                 VTraceType::StableCheckAndCycles => {
-                                    let mut cycles = self.machine.inner_mut().traces[slot].cycles;
+                                    let mut cycles =
+                                        self.machine.inner_mut().imc.traces[slot].cycles;
                                     self.machine.add_cycles(cycles)?;
                                     for instruction in
-                                        self.machine.inner_mut().traces[slot].instructions
+                                        self.machine.inner_mut().imc.traces[slot].instructions
                                     {
                                         if instruction == blank_instruction(OP_CUSTOM_TRACE_END) {
                                             break;
@@ -756,8 +761,8 @@ impl AsmMachine {
                                             let comming_cycles =
                                                 self.machine.instruction_cycle_func()(
                                                     instruction,
-                                                    self.machine.vl(),
-                                                    self.machine.vsew(),
+                                                    self.machine.inner.rvv.vl(),
+                                                    self.machine.inner.rvv.vsew(),
                                                 );
                                             self.machine.add_cycles(comming_cycles)?;
                                             cycles += comming_cycles;
@@ -769,14 +774,14 @@ impl AsmMachine {
                                             instruction,
                                         )?;
                                     }
-                                    self.machine.inner_mut().traces[slot].slowpath = 0b101;
-                                    self.machine.inner_mut().traces[slot].cycles = cycles;
+                                    self.machine.inner_mut().imc.traces[slot].slowpath = 0b101;
+                                    self.machine.inner_mut().imc.traces[slot].cycles = cycles;
                                 }
                                 VTraceType::StableCheck => {
-                                    let cycles = self.machine.inner_mut().traces[slot].cycles;
+                                    let cycles = self.machine.inner_mut().imc.traces[slot].cycles;
                                     self.machine.add_cycles(cycles)?;
                                     for instruction in
-                                        self.machine.inner_mut().traces[slot].instructions
+                                        self.machine.inner_mut().imc.traces[slot].instructions
                                     {
                                         if instruction == blank_instruction(OP_CUSTOM_TRACE_END) {
                                             break;
@@ -784,8 +789,8 @@ impl AsmMachine {
                                         if is_slowpath_instruction(instruction) {
                                             let cycles = self.machine.instruction_cycle_func()(
                                                 instruction,
-                                                self.machine.vl(),
-                                                self.machine.vsew(),
+                                                self.machine.inner.rvv.vl(),
+                                                self.machine.inner.rvv.vsew(),
                                             );
                                             self.machine.add_cycles(cycles)?;
                                         }
@@ -796,13 +801,13 @@ impl AsmMachine {
                                             instruction,
                                         )?;
                                     }
-                                    self.machine.inner_mut().traces[slot].slowpath = 0b011;
+                                    self.machine.inner_mut().imc.traces[slot].slowpath = 0b011;
                                 }
                                 VTraceType::Unstable => {
-                                    let cycles = self.machine.inner_mut().traces[slot].cycles;
+                                    let cycles = self.machine.inner_mut().imc.traces[slot].cycles;
                                     self.machine.add_cycles(cycles)?;
                                     for instruction in
-                                        self.machine.inner_mut().traces[slot].instructions
+                                        self.machine.inner_mut().imc.traces[slot].instructions
                                     {
                                         if instruction == blank_instruction(OP_CUSTOM_TRACE_END) {
                                             break;
@@ -810,8 +815,8 @@ impl AsmMachine {
                                         if is_slowpath_instruction(instruction) {
                                             let cycles = self.machine.instruction_cycle_func()(
                                                 instruction,
-                                                self.machine.vl(),
-                                                self.machine.vsew(),
+                                                self.machine.inner.rvv.vl(),
+                                                self.machine.inner.rvv.vsew(),
                                             );
                                             self.machine.add_cycles(cycles)?;
                                         }
@@ -836,9 +841,9 @@ impl AsmMachine {
 
     pub fn step(&mut self, decoder: &mut Decoder) -> Result<(), Error> {
         let vcheck_function_list =
-            generate_vcheck_function_list::<DefaultMachine<Box<AsmCoreMachine>>>();
+            generate_vcheck_function_list::<DefaultMachine<AsmGlueMachine>>();
         let handle_function_list =
-            generate_handle_function_list::<DefaultMachine<Box<AsmCoreMachine>>>();
+            generate_handle_function_list::<DefaultMachine<AsmGlueMachine>>();
         // Decode only one instruction into a trace
         let pc = *self.machine.pc();
         let slot = calculate_slot(pc);
@@ -846,8 +851,8 @@ impl AsmMachine {
         let instruction = decoder.decode(self.machine.memory_mut(), pc)?;
         let len = instruction_length(instruction) as u8;
         trace.instructions[0] = instruction;
-        let vl = self.machine.vl();
-        let sew = self.machine.vsew();
+        let vl = self.machine.inner.rvv.vl();
+        let sew = self.machine.inner.rvv.vsew();
         trace.cycles += self.machine.instruction_cycle_func()(instruction, vl, sew);
         let opcode = extract_opcode(instruction);
         trace.thread[0] = unsafe {
@@ -861,9 +866,9 @@ impl AsmMachine {
         };
         trace.address = pc;
         trace.length = len;
-        self.machine.inner_mut().traces[slot] = trace;
+        self.machine.inner_mut().imc.traces[slot] = trace;
 
-        let result = unsafe { ckb_vm_x64_execute(&mut (**self.machine.inner_mut())) };
+        let result = unsafe { ckb_vm_x64_execute(&mut (*self.machine.inner_mut().imc)) };
         match result {
             RET_DECODE_TRACE => (),
             RET_ECALL => self.machine.ecall()?,
@@ -884,9 +889,9 @@ impl AsmMachine {
             RET_SLOWPATH_TRACE => {
                 let pc = *self.machine.pc();
                 let slot = calculate_slot(pc);
-                let cycles = self.machine.inner_mut().traces[slot].cycles;
+                let cycles = self.machine.inner_mut().imc.traces[slot].cycles;
                 self.machine.add_cycles(cycles)?;
-                for instruction in self.machine.inner_mut().traces[slot].instructions {
+                for instruction in self.machine.inner_mut().imc.traces[slot].instructions {
                     if instruction == blank_instruction(OP_CUSTOM_TRACE_END) {
                         break;
                     }
@@ -900,7 +905,7 @@ impl AsmMachine {
             }
             _ => return Err(Error::Asm(result)),
         }
-        self.machine.inner_mut().traces[slot] = Trace::default();
+        self.machine.inner_mut().imc.traces[slot] = Trace::default();
         Ok(())
     }
 }

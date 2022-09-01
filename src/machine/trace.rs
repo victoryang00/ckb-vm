@@ -3,7 +3,7 @@ use crate::instructions::{
     execute, generate_handle_function_list, generate_vcheck_function_list, instruction_length,
     is_basic_block_end_instruction, Instruction, Register,
 };
-use crate::machine::{CoreMachine, DefaultMachine, Machine, SupportMachine};
+use crate::machine::{CoprocessorV, CoreMachine, DefaultMachine, Machine, SupportMachine};
 use crate::Error;
 use bytes::Bytes;
 
@@ -67,64 +67,16 @@ impl<Inner: SupportMachine> CoreMachine for TraceMachine<Inner> {
         self.machine.set_register(idx, value)
     }
 
-    fn element_ref(&self, reg: usize, sew: u64, n: usize) -> &[u8] {
-        self.machine.element_ref(reg, sew, n)
-    }
-
-    fn element_mut(&mut self, reg: usize, sew: u64, n: usize) -> &mut [u8] {
-        self.machine.element_mut(reg, sew, n)
-    }
-
-    fn get_bit(&self, reg: usize, n: usize) -> bool {
-        self.machine.get_bit(reg, n)
-    }
-
-    fn set_bit(&mut self, reg: usize, n: usize) {
-        self.machine.set_bit(reg, n)
-    }
-
-    fn clr_bit(&mut self, reg: usize, n: usize) {
-        self.machine.clr_bit(reg, n)
-    }
-
-    fn set_vl(&mut self, rd: usize, rs1: usize, avl: u64, new_type: u64) {
-        self.machine.set_vl(rd, rs1, avl, new_type)
-    }
-
-    fn vl(&self) -> u64 {
-        self.machine.vl()
-    }
-
-    fn vlmax(&self) -> u64 {
-        self.machine.vlmax()
-    }
-
-    fn vsew(&self) -> u64 {
-        self.machine.vsew()
-    }
-
-    fn vlmul(&self) -> f64 {
-        self.machine.vlmul()
-    }
-
-    fn vta(&self) -> bool {
-        self.machine.vta()
-    }
-
-    fn vma(&self) -> bool {
-        self.machine.vma()
-    }
-
-    fn vill(&self) -> bool {
-        self.machine.vill()
-    }
-
-    fn vlenb(&self) -> u64 {
-        self.machine.vlenb()
-    }
-
     fn isa(&self) -> u8 {
         self.machine.isa()
+    }
+
+    fn coprocessor_v(&self) -> &CoprocessorV {
+        self.machine.coprocessor_v()
+    }
+
+    fn coprocessor_v_mut(&mut self) -> &mut CoprocessorV {
+        self.machine.coprocessor_v_mut()
     }
 
     fn version(&self) -> u32 {
@@ -192,8 +144,8 @@ impl<Inner: SupportMachine> TraceMachine<Inner> {
             }
             for i in 0..self.traces[slot].instruction_count {
                 let i = self.traces[slot].instructions[i as usize];
-                let vl = self.machine.vl();
-                let sew = self.vsew();
+                let vl = self.coprocessor_v().vl();
+                let sew = self.coprocessor_v().vsew();
                 let cycles = self.machine.instruction_cycle_func()(i, vl, sew);
                 self.machine.add_cycles(cycles)?;
                 execute(self, &vcheck_func_list, &handle_func_list, i)?;

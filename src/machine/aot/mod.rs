@@ -16,7 +16,7 @@ use crate::{
         instruction_length, is_basic_block_end_instruction, is_slowpath_instruction,
         HandleFunction, Instruction,
     },
-    machine::{asm::AotCode, elf_adaptor, SupportMachine, VERSION1},
+    machine::{asm::AotCode, elf_adaptor, CoprocessorV, SupportMachine, VERSION1},
     CoreMachine, DefaultCoreMachine, Error, FlatMemory, InstructionCycleFunc, Machine, Memory,
     Register, RISCV_MAX_MEMORY,
 };
@@ -342,59 +342,11 @@ impl CoreMachine for LabelGatheringMachine {
         self.version
     }
 
-    fn element_ref(&self, _reg: usize, _sew: u64, _n: usize) -> &[u8] {
+    fn coprocessor_v(&self) -> &CoprocessorV {
         unreachable!()
     }
 
-    fn element_mut(&mut self, _reg: usize, _sew: u64, _n: usize) -> &mut [u8] {
-        unreachable!()
-    }
-
-    fn get_bit(&self, _reg: usize, _n: usize) -> bool {
-        unreachable!()
-    }
-
-    fn set_bit(&mut self, _reg: usize, _n: usize) {
-        unreachable!()
-    }
-
-    fn clr_bit(&mut self, _reg: usize, _n: usize) {
-        unreachable!()
-    }
-
-    fn set_vl(&mut self, _rd: usize, _rs1: usize, _avl: u64, _new_type: u64) {
-        unreachable!()
-    }
-
-    fn vl(&self) -> u64 {
-        unreachable!()
-    }
-
-    fn vlmax(&self) -> u64 {
-        unreachable!()
-    }
-
-    fn vsew(&self) -> u64 {
-        unreachable!()
-    }
-
-    fn vlmul(&self) -> f64 {
-        unreachable!()
-    }
-
-    fn vta(&self) -> bool {
-        unreachable!()
-    }
-
-    fn vma(&self) -> bool {
-        unreachable!()
-    }
-
-    fn vill(&self) -> bool {
-        unreachable!()
-    }
-
-    fn vlenb(&self) -> u64 {
+    fn coprocessor_v_mut(&mut self) -> &mut CoprocessorV {
         unreachable!()
     }
 }
@@ -758,59 +710,11 @@ impl CoreMachine for AotCompilingMachine {
         self.version
     }
 
-    fn element_ref(&self, _reg: usize, _sew: u64, _n: usize) -> &[u8] {
+    fn coprocessor_v(&self) -> &CoprocessorV {
         unreachable!()
     }
 
-    fn element_mut(&mut self, _reg: usize, _sew: u64, _n: usize) -> &mut [u8] {
-        unreachable!()
-    }
-
-    fn get_bit(&self, _reg: usize, _n: usize) -> bool {
-        unreachable!()
-    }
-
-    fn set_bit(&mut self, _reg: usize, _n: usize) {
-        unreachable!()
-    }
-
-    fn clr_bit(&mut self, _reg: usize, _n: usize) {
-        unreachable!()
-    }
-
-    fn set_vl(&mut self, _rd: usize, _rs1: usize, _avl: u64, _new_type: u64) {
-        unreachable!()
-    }
-
-    fn vl(&self) -> u64 {
-        unreachable!()
-    }
-
-    fn vlmax(&self) -> u64 {
-        unreachable!()
-    }
-
-    fn vsew(&self) -> u64 {
-        unreachable!()
-    }
-
-    fn vlmul(&self) -> f64 {
-        unreachable!()
-    }
-
-    fn vta(&self) -> bool {
-        unreachable!()
-    }
-
-    fn vma(&self) -> bool {
-        unreachable!()
-    }
-
-    fn vill(&self) -> bool {
-        unreachable!()
-    }
-
-    fn vlenb(&self) -> u64 {
+    fn coprocessor_v_mut(&mut self) -> &mut CoprocessorV {
         unreachable!()
     }
 }
