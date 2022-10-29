@@ -1,0 +1,11 @@
+[build]
+rustflags = ["--cfg", "tokio_unstable","--cfg" ,"madsim"]
+target = "riscv64gc-unknown-linux-gnu"
+
+[target.riscv64gc-unknown-linux-gnu]
+# rustflags = [
+#     "-Clink-arg=-fuse-ld=lld", "-Clink-arg=-Wl,--no-rosegment", "--cfg", "tokio_unstable","-C", "target-feature=+crt-static"
+# ]
+runner = " qemu-riscv64 "
+rustflags = ["-C", "target-feature=+crt-static", "--cfg", "tokio_unstable","--cfg" ,"madsim"]
+linker = "riscv64-linux-gnu-gcc"
